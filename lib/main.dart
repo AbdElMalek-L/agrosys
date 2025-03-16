@@ -1,6 +1,51 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:flutter_background_messenger/flutter_background_messenger.dart';
+
+final messenger = FlutterBackgroundMessenger();
+
+Future<void> sendSMS() async {
+  try {
+    final success = await messenger.sendSMS(
+      phoneNumber: '+212631200554',
+      message: 'KJDFQKHFAIUZVNJSKLDQNVGLQKJFJLKzefhu',
+    );
+
+    if (success) {
+      Fluttertoast.showToast(
+        msg: "SMS sent successfully",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    } else {
+      Fluttertoast.showToast(
+        msg: "Failed to send SMS",
+        toastLength: Toast.LENGTH_SHORT,
+        gravity: ToastGravity.CENTER,
+        timeInSecForIosWeb: 1,
+        backgroundColor: Colors.red,
+        textColor: Colors.white,
+        fontSize: 16.0,
+      );
+    }
+  } catch (e) {
+    Fluttertoast.showToast(
+      msg: 'Error sending SMS: $e',
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
+}
 
 void main() => runApp(MyApp());
 
@@ -112,26 +157,31 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 20),
               SignalIndicator(),
               SizedBox(height: 20),
-              GridView.count(
-                shrinkWrap: true,
-                crossAxisCount: 2,
-                mainAxisSpacing: 10,
-                crossAxisSpacing: 10,
-                children: [
-                  ActionButton(
-                    icon: LucideIcons.power,
-                    label: isPowerOn ? "إيقاف التشغيل" : "تشغيل",
-                    onPressed: () {
-                      setState(() {
-                        isPowerOn = !isPowerOn;
-                      });
-                    },
-                  ),
-                  ActionButton(
-                    icon: LucideIcons.calendarClock,
-                    label: "ضبط الجدول",
-                  ),
-                ],
+              Center(
+                child: Column(
+                  children: [
+                    IconButton(
+                      icon: Lottie.asset(
+                        'assets/power_animation.json',
+                        height: 150, // Adjusted size for a button-friendly UI
+                        width: 150,
+                        fit: BoxFit.cover,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          isPowerOn = !isPowerOn;
+                        });
+                        sendSMS();
+                      },
+                    ),
+                    Text(isPowerOn ? "إيقاف التشغيل" : "تشغيل"),
+
+                    // ActionButton(
+                    //   icon: LucideIcons.calendarClock,
+                    //   label: "ضبط الجدول",
+                    // ),
+                  ],
+                ),
               ),
               SizedBox(height: 20),
               RecentActivity(),
@@ -168,9 +218,10 @@ class _DeviceCardState extends State<DeviceCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4, // Adds a soft shadow effect
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      elevation: 0, // Adds a soft shadow effect
+      color: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      margin: EdgeInsets.symmetric(horizontal: 6, vertical: 8),
       child: Theme(
         data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(

@@ -110,6 +110,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_background_messenger:
+    dependency: "direct main"
+    description:
+      name: flutter_background_messenger
+      sha256: "8f6c14348e10780b9a23541e8e6c6dcc20404da3a73cca0c0726012171a6e88f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -131,6 +139,19 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_web_plugins:
+    dependency: transitive
+    description: flutter
+    source: sdk
+    version: "0.0.0"
+  fluttertoast:
+    dependency: "direct main"
+    description:
+      name: fluttertoast
+      sha256: "25e51620424d92d3db3832464774a6143b5053f15e382d8ffbfd40b6e795dcf1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "8.2.12"
   http:
     dependency: transitive
     description:
@@ -251,6 +272,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.0"
+  plugin_platform_interface:
+    dependency: transitive
+    description:
+      name: plugin_platform_interface
+      sha256: "4820fbfdb9478b1ebae27888254d445073732dae3d6ea81f0b7e06d5dedc3f02"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.8"
   posix:
     dependency: transitive
     description:
