@@ -38,6 +38,7 @@ dependencies:
   lucide_icons: ^0.257.0
   flutter_background_messenger: ^0.0.1
   fluttertoast: ^8.2.12
+  shared_preferences: ^2.5.2
 
 dev_dependencies:
   flutter_test:
