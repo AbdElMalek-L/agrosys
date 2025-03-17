@@ -134,12 +134,16 @@ class _HomePageState extends State<HomePage> {
 }
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
 class _HomeScreenState extends State<HomeScreen> {
   bool isPowerOn = false;
+  String controlAssetPowerOn = "assets/power_animation.json";
+  String controlAssetPowerOff = "assets/power_off.json";
 
   @override
   Widget build(BuildContext context) {
@@ -162,7 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     IconButton(
                       icon: Lottie.asset(
-                        'assets/power_animation.json',
+                        !isPowerOn ? controlAssetPowerOn : controlAssetPowerOff,
                         height: 150, // Adjusted size for a button-friendly UI
                         width: 150,
                         fit: BoxFit.cover,
@@ -194,6 +198,8 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class Header extends StatelessWidget {
+  const Header({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Text(
@@ -208,6 +214,8 @@ class Header extends StatelessWidget {
 }
 
 class DeviceCard extends StatefulWidget {
+  const DeviceCard({super.key});
+
   @override
   _DeviceCardState createState() => _DeviceCardState();
 }
@@ -285,6 +293,8 @@ class _DeviceCardState extends State<DeviceCard> {
 }
 
 class AddDevicePage extends StatelessWidget {
+  const AddDevicePage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -295,6 +305,8 @@ class AddDevicePage extends StatelessWidget {
 }
 
 class SignalIndicator extends StatelessWidget {
+  const SignalIndicator({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -322,7 +334,12 @@ class ActionButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
 
-  ActionButton({required this.icon, required this.label, this.onPressed});
+  const ActionButton({
+    super.key,
+    required this.icon,
+    required this.label,
+    this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -345,6 +362,8 @@ class ActionButton extends StatelessWidget {
 }
 
 class RecentActivity extends StatelessWidget {
+  const RecentActivity({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
