@@ -87,6 +87,7 @@ class SplashScreen extends StatelessWidget {
                 "قم بإدارة نظام الري الخاص بك بسهولة باستخدام أوامر SMS تلقائية. راقب وتحكم في أجهزتك عن بُعد لتحقيق إدارة مياه فعالة.",
                 style: TextStyle(fontSize: 16, color: Colors.black87),
                 textAlign: TextAlign.center,
+                textDirection: TextDirection.rtl,
               ),
               const SizedBox(height: 200),
               ElevatedButton(
