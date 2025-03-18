@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_background_messenger/flutter_background_messenger.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 
 final messenger = FlutterBackgroundMessenger();
 
+// Function to send an SMS message
 Future<void> sendSMS() async {
   try {
     final success = await messenger.sendSMS(
@@ -13,28 +15,18 @@ Future<void> sendSMS() async {
       message: 'KJDFQKHFAIUZVNJSKLDQNVGLQKJFJLKzefhu',
     );
 
-    if (success) {
-      Fluttertoast.showToast(
-        msg: "SMS sent successfully",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-    } else {
-      Fluttertoast.showToast(
-        msg: "Failed to send SMS",
-        toastLength: Toast.LENGTH_SHORT,
-        gravity: ToastGravity.CENTER,
-        timeInSecForIosWeb: 1,
-        backgroundColor: Colors.red,
-        textColor: Colors.white,
-        fontSize: 16.0,
-      );
-    }
+    // Show toast message to indicate success or failure
+    Fluttertoast.showToast(
+      msg: success ? "SMS sent successfully" : "Failed to send SMS",
+      toastLength: Toast.LENGTH_SHORT,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 1,
+      backgroundColor: Colors.red,
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
   } catch (e) {
+    print("Error sending SMS: $e"); // Log error for debugging
     Fluttertoast.showToast(
       msg: 'Error sending SMS: $e',
       toastLength: Toast.LENGTH_SHORT,
@@ -65,72 +57,81 @@ class SplashScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Lottie.asset('assets/lottie_animation.json', height: 300),
-              const SizedBox(height: 70),
-              const Text(
-                "AgroSys: تحكم ذكي في الري",
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF009200),
-                ),
-                textAlign: TextAlign.center,
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          double screenWidth = MediaQuery.of(context).size.width;
+          bool isSmallScreen = screenWidth < 600;
+
+          return Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: isSmallScreen ? 20 : screenWidth * 0.1,
               ),
-              const SizedBox(height: 20),
-              const Text(
-                "قم بإدارة نظام الري الخاص بك بسهولة باستخدام أوامر SMS تلقائية. راقب وتحكم في أجهزتك عن بُعد لتحقيق إدارة مياه فعالة.",
-                style: TextStyle(fontSize: 16, color: Colors.black87),
-                textAlign: TextAlign.center,
-                textDirection: TextDirection.rtl,
-              ),
-              const SizedBox(height: 200),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => HomePage()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xFF009200), // Green color
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 80,
-                    vertical: 12,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Animated Lottie file
+                  Lottie.asset(
+                    'assets/lottie_animation.json',
+                    height: isSmallScreen ? 200 : 300,
                   ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(9999),
+                  SizedBox(height: isSmallScreen ? 40 : 70),
+                  // App title
+                  Text(
+                    "AgroSys: تحكم ذكي في الري",
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 20 : 24,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF009200),
+                    ),
+                    textAlign: TextAlign.center,
+                    textDirection: TextDirection.rtl,
                   ),
-                ),
-                child: const Text(
-                  "ابدأ",
-                  style: TextStyle(fontSize: 18, color: Colors.white),
-                ),
+                  SizedBox(height: isSmallScreen ? 10 : 20),
+                  // Description text
+                  Text(
+                    "قم بإدارة نظام الري الخاص بك بسهولة باستخدام أوامر SMS تلقائية. راقب وتحكم في أجهزتك عن بُعد لتحقيق إدارة مياه فعالة.",
+                    style: TextStyle(
+                      fontSize: isSmallScreen ? 14 : 16,
+                      color: Colors.black87,
+                    ),
+                    textAlign: TextAlign.center,
+                    textDirection: TextDirection.rtl,
+                  ),
+                  SizedBox(height: isSmallScreen ? 100 : 200),
+                  // Start button
+                  ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xFF009200),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: isSmallScreen ? 60 : 80,
+                        vertical: isSmallScreen ? 10 : 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(9999),
+                      ),
+                    ),
+                    child: Text(
+                      "ابدأ",
+                      style: TextStyle(
+                        fontSize: isSmallScreen ? 16 : 18,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
     );
-  }
-}
-
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
-
-  @override
-  _HomePageState createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(debugShowCheckedModeBanner: false, home: HomeScreen());
   }
 }
 
@@ -147,6 +148,32 @@ class _HomeScreenState extends State<HomeScreen> {
   String controlAssetPowerOff = "assets/power_off.json";
 
   @override
+  void initState() {
+    super.initState();
+    _loadPowerState();
+  }
+
+  // Load saved power state from shared preferences
+  Future<void> _loadPowerState() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isPowerOn = prefs.getBool('isPowerOn') ?? false;
+    });
+    print("Loaded power state: \$isPowerOn"); // Debugging log
+  }
+
+  // Toggle power state and send an SMS
+  Future<void> _togglePower() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isPowerOn = !isPowerOn;
+      prefs.setBool('isPowerOn', isPowerOn);
+    });
+    print("Power toggled: \$isPowerOn"); // Debugging log
+    sendSMS();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xfff6fcf8),
@@ -158,38 +185,21 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Center(child: Header()),
               SizedBox(height: 20),
-              DeviceCard(),
-              SizedBox(height: 20),
-              SignalIndicator(),
-              SizedBox(height: 20),
-              Center(
-                child: Column(
-                  children: [
-                    IconButton(
-                      icon: Lottie.asset(
-                        !isPowerOn ? controlAssetPowerOn : controlAssetPowerOff,
-                        height: 150, // Adjusted size for a button-friendly UI
-                        width: 150,
-                        fit: BoxFit.cover,
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          isPowerOn = !isPowerOn;
-                        });
-                        sendSMS();
-                      },
-                    ),
-                    Text(isPowerOn ? "إيقاف التشغيل" : "تشغيل"),
-
-                    // ActionButton(
-                    //   icon: LucideIcons.calendarClock,
-                    //   label: "ضبط الجدول",
-                    // ),
-                  ],
+              // Animated power button
+              GestureDetector(
+                onTap: _togglePower,
+                child: Lottie.asset(
+                  isPowerOn ? controlAssetPowerOff : controlAssetPowerOn,
+                  height: 150,
+                  width: 150,
+                  fit: BoxFit.cover,
                 ),
               ),
-              SizedBox(height: 20),
-              RecentActivity(),
+              // Status text
+              Text(
+                isPowerOn ? "إيقاف التشغيل" : "تشغيل",
+                textDirection: TextDirection.rtl,
+              ),
             ],
           ),
         ),
@@ -362,8 +372,51 @@ class ActionButton extends StatelessWidget {
   }
 }
 
-class RecentActivity extends StatelessWidget {
+class RecentActivity extends StatefulWidget {
   const RecentActivity({super.key});
+
+  @override
+  _RecentActivityState createState() => _RecentActivityState();
+}
+
+class _RecentActivityState extends State<RecentActivity> {
+  List<Map<String, String>> activities = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadActivities();
+  }
+
+  Future<void> _loadActivities() async {
+    final prefs = await SharedPreferences.getInstance();
+    final String? storedActivities = prefs.getString('recent_activities');
+    if (storedActivities != null) {
+      setState(() {
+        activities = List<Map<String, String>>.from(
+          json.decode(storedActivities),
+        );
+      });
+    }
+  }
+
+  Future<void> _addActivity(
+    String title,
+    String subtitle,
+    IconData icon,
+    Color color,
+  ) async {
+    final prefs = await SharedPreferences.getInstance();
+    final newActivity = {
+      'title': title,
+      'subtitle': subtitle,
+      'icon': icon.codePoint.toString(),
+      'color': color.value.toString(),
+    };
+    activities.insert(0, newActivity);
+    await prefs.setString('recent_activities', json.encode(activities));
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -381,15 +434,20 @@ class RecentActivity extends StatelessWidget {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: 10),
-          ListTile(
-            leading: Icon(LucideIcons.power, color: Colors.blue),
-            title: Text("تم تشغيل الجهاز"),
-            subtitle: Text("اليوم، 2:34 مساءً"),
-          ),
-          ListTile(
-            leading: Icon(LucideIcons.bellRing, color: Colors.red),
-            title: Text("تنبيه: تم استعادة الإشارة"),
-            subtitle: Text("اليوم، 1:15 مساءً"),
+          if (activities.isEmpty)
+            Text("لا يوجد نشاط حتى الآن", style: TextStyle(color: Colors.grey)),
+          ...activities.map(
+            (activity) => ListTile(
+              leading: Icon(
+                IconData(
+                  int.parse(activity['icon']!),
+                  fontFamily: 'MaterialIcons',
+                ),
+                color: Color(int.parse(activity['color']!)),
+              ),
+              title: Text(activity['title']!),
+              subtitle: Text(activity['subtitle']!),
+            ),
           ),
         ],
       ),
