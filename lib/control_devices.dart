@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class DeviceCard extends StatefulWidget {
   const DeviceCard({super.key});
@@ -86,7 +87,29 @@ class AddDevicePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text("إضافة جهاز جديد")),
-      body: Column(children: [Text("data"), NewDeviceForm()]),
+      body: Column(
+        children: [
+          Lottie.asset('assets/Adddevice.json', height: 200),
+          NewDeviceForm(),
+
+          Center(
+            child: GestureDetector(
+              // onTapDown: _addActivity(
+              //   "String title",
+              //   "String subtitle",
+              //   "IconData icon",
+              //   "Color color",
+              // ),
+              child: Lottie.asset(
+                "assets/button.json",
+                height: 250,
+                width: 250,
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -99,12 +122,12 @@ class NewDeviceForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: TextField(
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              hintText: 'Enter a search term',
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: TextFormField(
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'اسم الجهاز',
             ),
           ),
         ),
@@ -113,7 +136,7 @@ class NewDeviceForm extends StatelessWidget {
           child: TextFormField(
             decoration: const InputDecoration(
               border: UnderlineInputBorder(),
-              labelText: 'Enter your username',
+              labelText: 'رقم الخاص بجهاز ',
             ),
           ),
         ),
@@ -122,7 +145,7 @@ class NewDeviceForm extends StatelessWidget {
           child: TextFormField(
             decoration: const InputDecoration(
               border: UnderlineInputBorder(),
-              labelText: 'Enter your username',
+              labelText: 'الرقم  السري',
             ),
           ),
         ),

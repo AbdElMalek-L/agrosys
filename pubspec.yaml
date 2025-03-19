@@ -61,6 +61,8 @@ flutter:
     - assets/lottie_animation.json
     - assets/power_animation.json
     - assets/power_off.json
+    - assets/Adddevice.json
+    - assets/button.json
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
