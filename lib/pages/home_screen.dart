@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../modules/sent_sms.dart';
+import '../components/recent_activity.dart';
 import '../components/device_card.dart';
-import 'dart:convert';
 
 class Header extends StatelessWidget {
   const Header({super.key});
@@ -103,93 +103,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   textDirection: TextDirection.rtl,
                 ),
               ),
-              RecentActivity(),
+              RecentActivityWidget(),
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class RecentActivity extends StatefulWidget {
-  const RecentActivity({super.key});
-
-  @override
-  _RecentActivityState createState() => _RecentActivityState();
-}
-
-class _RecentActivityState extends State<RecentActivity> {
-  List<Map<String, String>> activities = [];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadActivities();
-  }
-
-  Future<void> _loadActivities() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? storedActivities = prefs.getString('recent_activities');
-    if (storedActivities != null) {
-      setState(() {
-        activities = List<Map<String, String>>.from(
-          json.decode(storedActivities),
-        );
-      });
-    }
-  }
-
-  Future<void> _addActivity(
-    String title,
-    String subtitle,
-    IconData icon,
-    Color color,
-  ) async {
-    final prefs = await SharedPreferences.getInstance();
-    final newActivity = {
-      'title': title,
-      'subtitle': subtitle,
-      'icon': icon.codePoint.toString(),
-      'color': color.value.toString(),
-    };
-    activities.insert(0, newActivity);
-    await prefs.setString('recent_activities', json.encode(activities));
-    setState(() {});
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            "النشاط الأخير",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: 10),
-          if (activities.isEmpty)
-            Text("لا يوجد نشاط حتى الآن", style: TextStyle(color: Colors.grey)),
-          ...activities.map(
-            (activity) => ListTile(
-              leading: Icon(
-                IconData(
-                  int.parse(activity['icon']!),
-                  fontFamily: 'MaterialIcons',
-                ),
-                color: Color(int.parse(activity['color']!)),
-              ),
-              title: Text(activity['title']!),
-              subtitle: Text(activity['subtitle']!),
-            ),
-          ),
-        ],
       ),
     );
   }
