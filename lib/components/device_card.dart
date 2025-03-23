@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
+import '../pages/add_device_page';
 
 class DeviceCard extends StatefulWidget {
   const DeviceCard({super.key});
@@ -76,80 +76,6 @@ class _DeviceCardState extends State<DeviceCard> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class AddDevicePage extends StatelessWidget {
-  const AddDevicePage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text("إضافة جهاز جديد")),
-      body: Column(
-        children: [
-          Lottie.asset('assets/Adddevice.json', height: 200),
-          NewDeviceForm(),
-
-          Center(
-            child: GestureDetector(
-              // onTapDown: _addActivity(
-              //   "String title",
-              //   "String subtitle",
-              //   "IconData icon",
-              //   "Color color",
-              // ),
-              child: Lottie.asset(
-                "assets/button.json",
-                height: 250,
-                width: 250,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class NewDeviceForm extends StatelessWidget {
-  const NewDeviceForm({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: TextFormField(
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'اسم الجهاز',
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: TextFormField(
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'رقم الخاص بجهاز ',
-            ),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: TextFormField(
-            decoration: const InputDecoration(
-              border: UnderlineInputBorder(),
-              labelText: 'الرقم  السري',
-            ),
-          ),
-        ),
-      ],
     );
   }
 }

@@ -1,0 +1,92 @@
+import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
+import 'home_screen.dart';
+
+
+
+class AddDevicePage extends StatelessWidget {
+  const AddDevicePage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: Text("إضافة جهاز جديد")),
+      body: Column(
+        children: [
+          Lottie.asset('assets/Adddevice.json', height: 200),
+          NewDeviceForm(),
+
+          Center(
+            child: GestureDetector(
+              // onTapDown: _addActivity(
+              //   "String title",
+              //   "String subtitle",
+              //   "IconData icon",
+              //   "Color color",
+              // ),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => HomeScreen()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xFF009200),
+                  padding: EdgeInsets.symmetric(horizontal: 80, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(9999),
+                  ),
+                ),
+                child: Text(
+                  "إضافة",
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class NewDeviceForm extends StatelessWidget {
+  const NewDeviceForm({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: TextFormField(
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'اسم الجهاز',
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: TextFormField(
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'رقم الخاص بجهاز ',
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+          child: TextFormField(
+            decoration: const InputDecoration(
+              border: UnderlineInputBorder(),
+              labelText: 'الرقم  السري',
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
