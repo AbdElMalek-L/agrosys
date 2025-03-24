@@ -4,13 +4,18 @@ import 'dart:convert';
 class DeviceStorage {
   static const String _storageKey = 'devices';
 
-  static Future<List<Map<String, String>>> LoadDevices() async {
+  static Future<List<Map<String, String>>> loadDevices() async {
     final prefs = await SharedPreferences.getInstance();
     final String? storedDevices = prefs.getString(_storageKey);
     if (storedDevices != null) {
       return List<Map<String, String>>.from(json.decode(storedDevices));
     }
     return [];
+  }
+
+  static Future<void> saveDevices(List<Map<String, String>> devices) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_storageKey, jsonEncode(devices));
   }
 
   static Future<void> addDevice(
@@ -20,7 +25,7 @@ class DeviceStorage {
     String passWord,
   ) async {
     final prefs = await SharedPreferences.getInstance();
-    List<Map<String, String>> devices = await LoadDevices();
+    List<Map<String, String>> devices = await loadDevices();
 
     final newDevice = {
       'model': model,

@@ -38,7 +38,7 @@ class _DeviceModelsCardState extends State<DeviceModelsCard> {
           iconColor: Colors.green[700],
           collapsedIconColor: Colors.green[700],
           title: Text(
-            _selectedModel ?? "المرجوا اختيار طراز الجهاز.",
+            _selectedModel ?? "طراز الجهاز",
             style: TextStyle(
               fontSize: 16,
               color: _selectedModel != null ? Colors.black : Colors.grey[600],
@@ -52,7 +52,7 @@ class _DeviceModelsCardState extends State<DeviceModelsCard> {
           ),
           children: [
             Divider(indent: 30, endIndent: 30, thickness: 1, color: mainColor),
-            ...widget.models.map((model) => _buildModelItem(model)).toList(),
+            ...widget.models.map((model) => _buildModelItem(model)),
           ],
         ),
       ),

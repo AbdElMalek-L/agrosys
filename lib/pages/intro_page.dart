@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'home_screen.dart';
-import 'package:lucide_icons/lucide_icons.dart';
+import 'add_device_page.dart';
+import '../modules/device_storage.dart';
+
+List<Map<String, String>> devices = [];
+Future<void> _loadDevices() async {
+  final loadedDevices = await DeviceStorage.loadDevices();
+}
 
 class IntroPage extends StatelessWidget {
   const IntroPage({super.key});
@@ -68,7 +74,13 @@ class IntroPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                        MaterialPageRoute(
+                          builder:
+                              (context) =>
+                                  devices.isEmpty
+                                      ? AddDevicePage()
+                                      : HomeScreen(),
+                        ),
                       );
                     },
 

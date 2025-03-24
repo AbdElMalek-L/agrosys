@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../modules/sent_sms.dart';
+import '../modules/device_storage.dart';
 import '../components/recent_activity.dart';
-import '../components/device_card.dart';
+import '../components/devices_card.dart';
 import '../components/header.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -19,6 +20,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String controlAssetPowerOn = "assets/power_animation.json";
   String controlAssetPowerOff = "assets/power_off.json";
 
+  List<Map<String, String>> devices = [];
+
   @override
   void initState() {
     super.initState();
@@ -31,7 +34,15 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       isPowerOn = prefs.getBool('isPowerOn') ?? false;
     });
-    print("Loaded power state: \$isPowerOn"); // Debugging log
+  }
+
+  // Load the list of devices
+
+  Future<void> _loadDevices() async {
+    final loadedDevices = await DeviceStorage.loadDevices();
+    setState(() {
+      devices = loadedDevices;
+    });
   }
 
   // Toggle power state and send an SMS
@@ -57,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               Center(child: Header(title: "لوحة التحكم")),
               SizedBox(height: 20),
-              DeviceCard(),
+              DevicesCard(devices: devices),
               SizedBox(height: 20),
 
               SignalIndicator(),
