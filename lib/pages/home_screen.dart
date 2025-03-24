@@ -4,22 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../modules/sent_sms.dart';
 import '../components/recent_activity.dart';
 import '../components/device_card.dart';
-
-class Header extends StatelessWidget {
-  const Header({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      "لوحة التحكم",
-      style: TextStyle(
-        color: const Color(0xff009200),
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
-}
+import '../components/header.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -70,7 +55,7 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(child: Header()),
+              Center(child: Header(title: "لوحة التحكم")),
               SizedBox(height: 20),
               DeviceCard(),
               SizedBox(height: 20),

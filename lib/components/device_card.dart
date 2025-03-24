@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../pages/add_device_page';
+import '../pages/add_device_page.dart';
+import '../modules/device_storage.dart';
 
 class DeviceCard extends StatefulWidget {
   const DeviceCard({super.key});
