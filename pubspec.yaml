@@ -39,6 +39,8 @@ dependencies:
   flutter_background_messenger: ^0.0.1
   fluttertoast: ^8.2.12
   shared_preferences: ^2.5.2
+  get: ^4.7.2
+  flutter_bloc: ^9.1.0
 
 dev_dependencies:
   flutter_test:
@@ -58,11 +60,7 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
   assets:
-    - assets/lottie_animation.json
-    - assets/power_animation.json
-    - assets/power_off.json
-    - assets/Adddevice.json
-    - assets/button.json
+    - assets/
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
