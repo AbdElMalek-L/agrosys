@@ -17,6 +17,7 @@ class DeviceStorage {
   late String phoneNumber;
   late String passWord;
   late bool isPoweredOn;
+  late int signal;
 
   //convert storage oobject -> pure device object to use in our app
   Device toDevice() {
@@ -27,6 +28,7 @@ class DeviceStorage {
       phoneNumber: phoneNumber,
       passWord: passWord,
       isPoweredOn: isPoweredOn,
+      signal: signal,
     );
   }
 
@@ -38,7 +40,8 @@ class DeviceStorage {
       ..name = device.name
       ..phoneNumber = device.phoneNumber
       ..passWord = device.passWord
-      ..isPoweredOn = device.isPoweredOn;
+      ..isPoweredOn = device.isPoweredOn
+      ..signal = device.signal;
   }
 
   // Convert JSON -> DeviceStorage
@@ -49,7 +52,8 @@ class DeviceStorage {
       ..name = json['name']
       ..phoneNumber = json['phoneNumber']
       ..passWord = json['passWord']
-      ..isPoweredOn = json['isPoweredOn'];
+      ..isPoweredOn = json['isPoweredOn']
+      ..signal = json['signal'];
   }
 
   // Convert DeviceStorage -> JSON
@@ -61,6 +65,7 @@ class DeviceStorage {
       'phoneNumber': phoneNumber,
       'passWord': passWord,
       'isPoweredOn': isPoweredOn,
+      'signal': signal,
     };
   }
 }

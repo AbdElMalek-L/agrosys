@@ -10,11 +10,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:lottie/lottie.dart';
 import 'package:agrosys/domain/models/device.dart';
-import 'package:agrosys/presentation/pages/cubits/device_cubit.dart';
+import 'package:agrosys/presentation/cubits/device_cubit.dart';
 import '../themes/colors.dart';
 import '../widgets/header.dart';
 import '../widgets/recent_activity.dart';
-import '../widgets/signal_indicator.dart';
 
 class DeviceView extends StatefulWidget {
   const DeviceView({super.key});
@@ -30,10 +29,6 @@ class _DeviceViewState extends State<DeviceView> {
 
   final String controlAssetPowerOn = "assets/power_animation.json";
   final String controlAssetPowerOff = "assets/power_off.json";
-
-  void _controlDevice(Device device) {
-    context.read<DeviceCubit>().togglePower(device);
-  }
 
   Widget _buildDeviceItem(BuildContext context, Device device) {
     final deviceCubit = context.read<DeviceCubit>();

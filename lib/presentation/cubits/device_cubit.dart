@@ -69,4 +69,16 @@ class DeviceCubit extends Cubit<List<Device>> {
     //reload
     loadDevices();
   }
+
+  // update signal
+  Future<void> updateSignal(Device device, int signal) async {
+    // update signal
+    final updatedDevice = device.updateSignal(signal);
+
+    // update the device in the repo
+    await deviceRepo.updateDevice(updatedDevice);
+
+    // reload
+    loadDevices();
+  }
 }

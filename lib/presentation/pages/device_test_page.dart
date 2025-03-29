@@ -7,7 +7,7 @@
  */
 
 import 'package:agrosys/domain/repository/device_repo.dart';
-import 'package:agrosys/presentation/pages/cubits/device_cubit.dart';
+import 'package:agrosys/presentation/cubits/device_cubit.dart';
 import 'package:agrosys/presentation/views/device_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
