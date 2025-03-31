@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+// TODO: Improve the style
+
 class Header extends StatelessWidget {
   const Header({super.key, required this.title});
 

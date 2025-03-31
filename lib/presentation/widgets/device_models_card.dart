@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../themes/colors.dart';
 
+// TODO: remove this.
+
 class DeviceModelsCard extends StatefulWidget {
   final List<String> models;
   final ValueChanged<String>? onModelSelected;

@@ -3,6 +3,8 @@ import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+// TODO: remove this.
+
 class AppStateTest extends StatelessWidget {
   const AppStateTest({super.key});
 

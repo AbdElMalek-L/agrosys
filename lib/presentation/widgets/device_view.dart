@@ -7,15 +7,20 @@
 */
 import 'package:agrosys/domain/models/app_state.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
+import 'package:agrosys/presentation/pages/add_device_page.dart';
+import 'package:agrosys/presentation/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:lottie/lottie.dart';
 import 'package:agrosys/domain/models/device.dart';
 import 'package:agrosys/presentation/cubits/device_cubit.dart';
 import '../themes/colors.dart';
-import '../widgets/header.dart';
-import '../widgets/recent_activity.dart';
+import 'header.dart';
+import 'recent_activity.dart';
+
+// TODO: Extract all the widgets in here.
 
 class DeviceView extends StatefulWidget {
   const DeviceView({super.key});
@@ -38,7 +43,6 @@ class _DeviceViewState extends State<DeviceView> {
     AppState appState,
   ) {
     final deviceCubit = context.read<DeviceCubit>();
-    final appStateCubit = context.read<AppStateCubit>();
     return Slidable(
       key: Key(device.id.toString()),
       startActionPane: ActionPane(
@@ -57,7 +61,13 @@ class _DeviceViewState extends State<DeviceView> {
         motion: const DrawerMotion(),
         children: [
           SlidableAction(
-            onPressed: (_) => _showSettingsDialog(context, device),
+            onPressed:
+                (_) => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SettingsPage(device: device),
+                  ),
+                ),
             backgroundColor: Colors.blue,
             foregroundColor: Colors.white,
             icon: Icons.settings,
@@ -106,54 +116,6 @@ class _DeviceViewState extends State<DeviceView> {
           ),
         ],
       ),
-    );
-  }
-
-  void _showInsertionForm(BuildContext context) {
-    final deviceCubit = context.read<DeviceCubit>();
-    final textController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            content: TextField(controller: textController),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text("إلغاء"),
-              ),
-              TextButton(
-                onPressed: () {
-                  deviceCubit.addDevice(
-                    "none",
-                    textController.text,
-                    "phoneNumber",
-                    "passWord",
-                  );
-                  Navigator.of(context).pop();
-                },
-                child: const Text("إضافة"),
-              ),
-            ],
-          ),
-    );
-  }
-
-  void _showSettingsDialog(BuildContext context, Device device) {
-    showDialog(
-      context: context,
-      builder:
-          (context) => AlertDialog(
-            title: Text("إعدادات ${device.name}"),
-            content: const Text("هنا يمكنك إضافة إعدادات الجهاز"),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("إغلاق"),
-              ),
-            ],
-          ),
     );
   }
 
@@ -236,24 +198,34 @@ class _DeviceViewState extends State<DeviceView> {
                                       appState,
                                     );
                                   }),
-                                  ListTile(
-                                    leading: Icon(
-                                      Icons.add,
-                                      color: Colors.green[700],
-                                    ),
-                                    title: const Text(
-                                      "إضافة جهاز جديد",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: ListTile(
+                                      leading: Icon(
+                                        Icons.add,
+                                        color: Colors.green[700],
                                       ),
-                                      textDirection: TextDirection.rtl,
+                                      title: const Text(
+                                        "إضافة جهاز جديد",
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                        textDirection: TextDirection.rtl,
+                                      ),
+                                      onTap:
+                                          () => Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder:
+                                                  (context) => AddDevicePage(),
+                                            ),
+                                          ),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      tileColor: Colors.green[50],
+                                      splashColor: Colors.green[100],
                                     ),
-                                    onTap: () => _showInsertionForm(context),
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    tileColor: Colors.green[50],
-                                    splashColor: Colors.green[100],
                                   ),
                                 ],
                               ),

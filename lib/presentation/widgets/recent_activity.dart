@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../controllers/recent_activity_storage.dart';
 
+// TODO: make this usefull. didnt use it yet
+
 class RecentActivityWidget extends StatefulWidget {
   const RecentActivityWidget({super.key});
 

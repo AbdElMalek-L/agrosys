@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+// TODO: make this usefull, didnt use it yet
+
 class SignalIndicator extends StatelessWidget {
   const SignalIndicator({super.key});
 

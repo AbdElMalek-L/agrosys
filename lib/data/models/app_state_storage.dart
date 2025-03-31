@@ -13,8 +13,7 @@ import 'package:agrosys/domain/models/device.dart';
 
 class AppStateStorage {
   late Device? selectedDevice;
-
-  //TODO: implement the storage of index
+  late int selectedDeviceIndex;
   late bool darkMode;
   late bool seenIntro;
 
@@ -22,6 +21,7 @@ class AppStateStorage {
   AppState toAppState() {
     return AppState(
       selectedDevice: selectedDevice,
+      selectedDeviceIndex: selectedDeviceIndex,
       darkMode: darkMode,
       seenIntro: seenIntro,
     );
@@ -31,6 +31,7 @@ class AppStateStorage {
   static AppStateStorage fromDomain(AppState appState) {
     return AppStateStorage()
       ..selectedDevice = appState.selectedDevice
+      ..selectedDeviceIndex = appState.selectedDeviceIndex
       ..darkMode = appState.darkMode
       ..seenIntro = appState.seenIntro;
   }
@@ -39,6 +40,7 @@ class AppStateStorage {
   static AppStateStorage fromJson(Map<String, dynamic> json) {
     return AppStateStorage()
       ..selectedDevice = json['selectedDevice']
+      ..selectedDeviceIndex = json['selectedDeviceIndex']
       ..darkMode = json['darkMode']
       ..seenIntro = json['seenIntro'];
   }
@@ -47,6 +49,7 @@ class AppStateStorage {
   Map<String, dynamic> toJson() {
     return {
       'selectedDeviceId': selectedDevice,
+      'selectedDeviceIndex': selectedDeviceIndex,
       'darkMode': darkMode,
       'seenIntro': seenIntro,
     };

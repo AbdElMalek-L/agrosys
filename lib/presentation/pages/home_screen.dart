@@ -1,12 +1,6 @@
-// import 'package:flutter/material.dart';
-// import 'package:get/get.dart';
-// import 'package:lottie/lottie.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-// import '../../controllers/device_controller.dart';
-// import '../../controllers/sent_sms.dart';
-// import '../widgets/recent_activity.dart';
-// import '../widgets/devices_card.dart';
-// import '../widgets/header.dart';
+// TODO: remove this.
+
+import 'package:flutter/material.dart';
 
 // class HomeScreen extends StatefulWidget {
 //   const HomeScreen({super.key});

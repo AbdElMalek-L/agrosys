@@ -3,6 +3,8 @@ import 'package:agrosys/presentation/pages/device_test_page.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
+// TODO: add saving that the user seen the intro.
+
 List<Device?> devices = [];
 
 class IntroPage extends StatelessWidget {
