@@ -1,14 +1,12 @@
-import 'package:agrosys/domain/repository/device_repo.dart';
+import 'package:agrosys/domain/models/device.dart';
 import 'package:agrosys/presentation/pages/device_test_page.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 
-List<Map<String, String>> devices = [];
+List<Device?> devices = [];
 
 class IntroPage extends StatelessWidget {
-  final DeviceRepo deviceRepo;
-
-  const IntroPage({super.key, required this.deviceRepo});
+  const IntroPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -75,10 +73,10 @@ class IntroPage extends StatelessWidget {
                         MaterialPageRoute(
                           builder:
                               (context) =>
-                              // devices.isEmpty
-                              //     ? AddDevicePage()
-                              // :
-                              DeviceTestPage(deviceRepo: deviceRepo),
+                                  // devices.isEmpty
+                                  //     ? AddDevicePage()
+                                  // :
+                                  DeviceTestPage(),
                         ),
                       );
                     },

@@ -6,6 +6,7 @@
 */
 
 import 'package:agrosys/domain/models/app_state.dart';
+import 'package:agrosys/domain/models/device.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:agrosys/domain/repository/app_state_repo.dart';
 
@@ -28,6 +29,15 @@ class AppStateCubit extends Cubit<AppState> {
     final updatedAppState = currentState.toggleDarkMode();
     // Use repository to persist changes
     await appStateRepo.updateAppState(updatedAppState);
+    emit(updatedAppState);
+  }
+
+  Future<void> setSelectedDevice(int index) async {
+    final currentState = state;
+    final updatedAppState = currentState.setSelectedDevice(index);
+    // Use repository to persist changes
+    await appStateRepo.updateAppState(updatedAppState);
+
     emit(updatedAppState);
   }
 

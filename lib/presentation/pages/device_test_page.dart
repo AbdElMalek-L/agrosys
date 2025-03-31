@@ -13,14 +13,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DeviceTestPage extends StatelessWidget {
-  final DeviceRepo deviceRepo;
-
-  const DeviceTestPage({super.key, required this.deviceRepo});
+  const DeviceTestPage({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => DeviceCubit(deviceRepo),
+      create: (context) => DeviceCubit(context.read<DeviceRepo>()),
       child: const DeviceView(),
     );
   }

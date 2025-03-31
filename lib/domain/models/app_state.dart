@@ -7,7 +7,7 @@ ________________________________________________________________________________
 
 It has these propeties:
 
-- selectedDeviceId
+- selectedDevice
 - darkMode
 - seenIntro
 ________________________________________________________________________________
@@ -22,19 +22,31 @@ Methodes:
 import 'package:agrosys/domain/models/device.dart';
 
 class AppState {
-  final int? selectedDeviceId;
+  final Device? selectedDevice;
+  final int selectedDeviceIndex;
   final bool darkMode;
   final bool seenIntro;
 
   AppState({
-    this.selectedDeviceId,
-    this.darkMode = false,
+    this.selectedDevice,
+    this.darkMode = true,
     this.seenIntro = false,
+    this.selectedDeviceIndex = 0,
   });
 
   AppState toggleDarkMode() {
     return AppState(
-      selectedDeviceId: selectedDeviceId,
+      selectedDeviceIndex: selectedDeviceIndex,
+      selectedDevice: selectedDevice,
+      darkMode: !darkMode,
+      seenIntro: seenIntro,
+    );
+  }
+
+  AppState setSelectedDevice(int index) {
+    return AppState(
+      selectedDeviceIndex: index,
+      selectedDevice: selectedDevice,
       darkMode: !darkMode,
       seenIntro: seenIntro,
     );
@@ -42,7 +54,9 @@ class AppState {
 
   AppState updateSelectedDevieId(Device device) {
     return AppState(
-      selectedDeviceId: device.id,
+      selectedDeviceIndex: selectedDeviceIndex,
+
+      selectedDevice: device,
       darkMode: darkMode,
       seenIntro: seenIntro,
     );
@@ -50,7 +64,9 @@ class AppState {
 
   AppState sawIntro() {
     return AppState(
-      selectedDeviceId: selectedDeviceId,
+      selectedDeviceIndex: selectedDeviceIndex,
+
+      selectedDevice: selectedDevice,
       darkMode: darkMode,
       seenIntro: true,
     );

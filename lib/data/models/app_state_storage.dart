@@ -9,16 +9,19 @@
  */
 
 import 'package:agrosys/domain/models/app_state.dart';
+import 'package:agrosys/domain/models/device.dart';
 
 class AppStateStorage {
-  late int? selectedDeviceId;
+  late Device? selectedDevice;
+
+  //TODO: implement the storage of index
   late bool darkMode;
   late bool seenIntro;
 
   //convert storage oobject -> pure appState object to use in our app
   AppState toAppState() {
     return AppState(
-      selectedDeviceId: selectedDeviceId,
+      selectedDevice: selectedDevice,
       darkMode: darkMode,
       seenIntro: seenIntro,
     );
@@ -27,7 +30,7 @@ class AppStateStorage {
   // Convert pure appState object -> storage object to store in local storage
   static AppStateStorage fromDomain(AppState appState) {
     return AppStateStorage()
-      ..selectedDeviceId = appState.selectedDeviceId
+      ..selectedDevice = appState.selectedDevice
       ..darkMode = appState.darkMode
       ..seenIntro = appState.seenIntro;
   }
@@ -35,7 +38,7 @@ class AppStateStorage {
   // Convert JSON -> AppStateStorage
   static AppStateStorage fromJson(Map<String, dynamic> json) {
     return AppStateStorage()
-      ..selectedDeviceId = json['selectedDeviceId']
+      ..selectedDevice = json['selectedDevice']
       ..darkMode = json['darkMode']
       ..seenIntro = json['seenIntro'];
   }
@@ -43,7 +46,7 @@ class AppStateStorage {
   // Convert AppStateStorage -> JSON
   Map<String, dynamic> toJson() {
     return {
-      'selectedDeviceId': selectedDeviceId,
+      'selectedDeviceId': selectedDevice,
       'darkMode': darkMode,
       'seenIntro': seenIntro,
     };
