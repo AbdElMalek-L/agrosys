@@ -22,13 +22,11 @@ Methodes:
 import 'package:agrosys/domain/models/device.dart';
 
 class AppState {
-  final Device? selectedDevice;
   final int selectedDeviceIndex;
   final bool darkMode;
   final bool seenIntro;
 
   AppState({
-    this.selectedDevice,
     this.darkMode = true,
     this.seenIntro = false,
     this.selectedDeviceIndex = 0,
@@ -37,7 +35,6 @@ class AppState {
   AppState toggleDarkMode() {
     return AppState(
       selectedDeviceIndex: selectedDeviceIndex,
-      selectedDevice: selectedDevice,
       darkMode: !darkMode,
       seenIntro: seenIntro,
     );
@@ -46,7 +43,6 @@ class AppState {
   AppState setSelectedDevice(int index) {
     return AppState(
       selectedDeviceIndex: index,
-      selectedDevice: selectedDevice,
       darkMode: !darkMode,
       seenIntro: seenIntro,
     );
@@ -55,8 +51,6 @@ class AppState {
   AppState updateSelectedDevieId(Device device) {
     return AppState(
       selectedDeviceIndex: selectedDeviceIndex,
-
-      selectedDevice: device,
       darkMode: darkMode,
       seenIntro: seenIntro,
     );
@@ -65,8 +59,6 @@ class AppState {
   AppState sawIntro() {
     return AppState(
       selectedDeviceIndex: selectedDeviceIndex,
-
-      selectedDevice: selectedDevice,
       darkMode: darkMode,
       seenIntro: true,
     );

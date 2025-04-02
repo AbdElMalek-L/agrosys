@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../controllers/recent_activity_storage.dart';
 
 // TODO: make this usefull. didnt use it yet
+// TODO: create cuibit for this
 
 class RecentActivityWidget extends StatefulWidget {
   const RecentActivityWidget({super.key});

@@ -8,11 +8,12 @@
 import 'package:agrosys/domain/models/app_state.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
 import 'package:agrosys/presentation/pages/add_device_page.dart';
+import 'package:agrosys/presentation/pages/devices_list_page.dart';
 import 'package:agrosys/presentation/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:get/route_manager.dart';
 import 'package:lottie/lottie.dart';
 import 'package:agrosys/domain/models/device.dart';
 import 'package:agrosys/presentation/cubits/device_cubit.dart';
@@ -36,89 +37,6 @@ class _DeviceViewState extends State<DeviceView> {
   final String controlAssetPowerOn = "assets/power_animation.json";
   final String controlAssetPowerOff = "assets/power_off.json";
 
-  Widget _buildDeviceItem(
-    BuildContext context,
-    Device device,
-    int index,
-    AppState appState,
-  ) {
-    final deviceCubit = context.read<DeviceCubit>();
-    return Slidable(
-      key: Key(device.id.toString()),
-      startActionPane: ActionPane(
-        motion: const DrawerMotion(),
-        children: [
-          SlidableAction(
-            onPressed: (_) => deviceCubit.deleteDevice(device),
-            backgroundColor: Colors.red,
-            foregroundColor: Colors.white,
-            icon: Icons.delete,
-            label: 'حذف',
-          ),
-        ],
-      ),
-      endActionPane: ActionPane(
-        motion: const DrawerMotion(),
-        children: [
-          SlidableAction(
-            onPressed:
-                (_) => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => SettingsPage(device: device),
-                  ),
-                ),
-            backgroundColor: Colors.blue,
-            foregroundColor: Colors.white,
-            icon: Icons.settings,
-            label: 'إعدادات',
-          ),
-        ],
-      ),
-      child: Column(
-        children: [
-          Divider(
-            indent: 30,
-            endIndent: 30,
-            thickness: 1,
-            color: Colors.green[100],
-          ),
-          Column(
-            children: [
-              ListTile(
-                title: Text(
-                  device.name,
-                  textDirection: TextDirection.rtl,
-                  style: TextStyle(
-                    color:
-                        appState.selectedDevice?.id == device.id
-                            ? mainColor
-                            : Colors.black,
-                  ),
-                ),
-                trailing:
-                    appState.selectedDevice?.id == device.id
-                        ? Icon(Icons.check_circle, color: mainColor)
-                        : null,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                onTap: () {
-                  context.read<AppStateCubit>().setSelectedDevice(index);
-
-                  setState(() {
-                    _expansionKey++;
-                    _isExpanded = false;
-                  });
-                },
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -132,117 +50,80 @@ class _DeviceViewState extends State<DeviceView> {
                   children: [
                     SizedBox(height: 20),
                     const Center(child: Header(title: "لوحة التحكم")),
-                    Text(appState.darkMode ? "Dark Mode" : "Light Mode"),
-                    Text(appState.selectedDevice?.name ?? 'hh'),
-
                     Text(appState.selectedDeviceIndex.toString()),
                     const SizedBox(height: 20),
                     Expanded(
                       child: ListView(
                         padding: const EdgeInsets.all(10),
                         children: [
-                          Card(
-                            elevation: 0,
-                            color: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 8,
-                            ),
-                            child: Theme(
-                              data: Theme.of(
-                                context,
-                              ).copyWith(dividerColor: Colors.transparent),
-                              child: ExpansionTile(
-                                key: ValueKey(_expansionKey),
-                                onExpansionChanged:
-                                    (expanded) =>
-                                        setState(() => _isExpanded = expanded),
-                                tilePadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 0,
-                                ),
-                                childrenPadding: const EdgeInsets.only(
-                                  bottom: 12,
-                                ),
-                                iconColor: Colors.green[700],
-                                collapsedIconColor: Colors.green[700],
-                                title: Text(
-                                  devices.isEmpty
-                                      ? "الجهاز"
-                                      : devices[appState.selectedDeviceIndex]
-                                          .name,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color:
-                                        appState.selectedDevice != null
-                                            ? Colors.black
-                                            : Colors.grey[600],
-                                  ),
-                                  textDirection: TextDirection.rtl,
-                                ),
-                                trailing: AnimatedRotation(
-                                  turns: _isExpanded ? 0.5 : 0,
-                                  duration: const Duration(milliseconds: 300),
-                                  child: const Icon(Icons.expand_more),
-                                ),
-                                children: [
-                                  ...List.generate(devices.length, (index) {
-                                    final device = devices[index];
-                                    return _buildDeviceItem(
-                                      context,
-                                      device,
-                                      index, // Pass index explicitly
-                                      appState,
-                                    );
-                                  }),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: ListTile(
-                                      leading: Icon(
-                                        Icons.add,
-                                        color: Colors.green[700],
-                                      ),
-                                      title: const Text(
-                                        "إضافة جهاز جديد",
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500,
+                          Hero(
+                            tag: "change_selected_device",
+
+                            child: Card(
+                              elevation: 0,
+                              color: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              margin: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 8,
+                              ),
+                              child: Theme(
+                                data: Theme.of(
+                                  context,
+                                ).copyWith(dividerColor: Colors.transparent),
+                                child: ExpansionTile(
+                                  key: ValueKey(_expansionKey),
+                                  onExpansionChanged:
+                                      (expanded) => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (context) => DevicesListPage(),
                                         ),
-                                        textDirection: TextDirection.rtl,
                                       ),
-                                      onTap:
-                                          () => Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder:
-                                                  (context) => AddDevicePage(),
-                                            ),
-                                          ),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      tileColor: Colors.green[50],
-                                      splashColor: Colors.green[100],
-                                    ),
+                                  tilePadding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 0,
                                   ),
-                                ],
+                                  childrenPadding: const EdgeInsets.only(
+                                    bottom: 12,
+                                  ),
+                                  iconColor: Colors.green[700],
+                                  collapsedIconColor: Colors.green[700],
+                                  title: Text(
+                                    devices.isEmpty
+                                        ? "الجهاز"
+                                        : devices[appState.selectedDeviceIndex]
+                                            .name,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color:
+                                          devices.isNotEmpty
+                                              ? Colors.black
+                                              : Colors.grey[600],
+                                    ),
+                                    textDirection: TextDirection.rtl,
+                                  ),
+                                  trailing: AnimatedRotation(
+                                    turns: _isExpanded ? 0.5 : 0,
+                                    duration: const Duration(milliseconds: 300),
+                                    child: const Icon(Icons.expand_more),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
+
                           // const SignalIndicator(),
                           const SizedBox(height: 20),
 
                           const SizedBox(height: 20),
-                          if (appState.selectedDevice != null) ...[
+                          if (devices.isNotEmpty) ...[
                             BlocBuilder<DeviceCubit, List<Device>>(
                               builder: (context, devices) {
                                 // Get the updated device from the list
-                                final currentDevice = devices.firstWhere(
-                                  (d) => d.id == appState.selectedDevice!.id,
-                                  orElse: () => appState.selectedDevice!,
-                                );
 
                                 return Column(
                                   children: [
@@ -251,9 +132,13 @@ class _DeviceViewState extends State<DeviceView> {
                                         onTap:
                                             () => context
                                                 .read<DeviceCubit>()
-                                                .togglePower(currentDevice),
+                                                .togglePower(
+                                                  devices[appState
+                                                      .selectedDeviceIndex],
+                                                ),
                                         child: Lottie.asset(
-                                          currentDevice.isPoweredOn
+                                          devices[appState.selectedDeviceIndex]
+                                                  .isPoweredOn
                                               ? controlAssetPowerOff
                                               : controlAssetPowerOn,
                                           height: 150,
@@ -264,7 +149,8 @@ class _DeviceViewState extends State<DeviceView> {
                                     ),
                                     Center(
                                       child: Text(
-                                        currentDevice.isPoweredOn
+                                        devices[appState.selectedDeviceIndex]
+                                                .isPoweredOn
                                             ? "إيقاف التشغيل"
                                             : "تشغيل",
                                         textDirection: TextDirection.rtl,
