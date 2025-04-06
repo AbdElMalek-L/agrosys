@@ -10,7 +10,7 @@ import '../widgets/header.dart';
 // TODO: add the new device as default selected in dashboard screen when saving.
 
 class AddDevicePage extends StatelessWidget {
-  AddDevicePage({Key? key}) : super(key: key);
+  AddDevicePage({super.key});
 
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _deviceNameController = TextEditingController();

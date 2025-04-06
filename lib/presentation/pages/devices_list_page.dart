@@ -11,7 +11,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
 // TODO: implement a full page scrolable lsitview with slidable devices
-// TODO: Add floating action button for adding new device
+// TODO: Add floating action button for adding new device _/ _/
 
 class DevicesListPage extends StatelessWidget {
   const DevicesListPage({super.key});
@@ -67,15 +67,32 @@ class DevicesListPage extends StatelessWidget {
           child: Column(
             children: [
               ListTile(
-                title: Text(
-                  device.name,
-                  textDirection: TextDirection.rtl,
-                  style: TextStyle(
-                    color:
-                        appState.selectedDeviceIndex == index
-                            ? mainColor
-                            : Colors.black,
-                  ),
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      device.model,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color:
+                            appState.selectedDeviceIndex == index
+                                ? mainColor
+                                : const Color.fromARGB(255, 66, 66, 66),
+                      ),
+                    ),
+
+                    Text(
+                      device.name,
+                      textDirection: TextDirection.rtl,
+
+                      style: TextStyle(
+                        color:
+                            appState.selectedDeviceIndex == index
+                                ? mainColor
+                                : const Color.fromARGB(255, 129, 129, 129),
+                      ),
+                    ),
+                  ],
                 ),
                 trailing:
                     appState.selectedDeviceIndex == index
@@ -86,6 +103,7 @@ class DevicesListPage extends StatelessWidget {
                 ),
                 onTap: () {
                   context.read<AppStateCubit>().setSelectedDevice(index);
+                  Navigator.pop(context);
                 },
               ),
             ],

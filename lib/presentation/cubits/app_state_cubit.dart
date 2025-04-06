@@ -6,7 +6,6 @@
 */
 
 import 'package:agrosys/domain/models/app_state.dart';
-import 'package:agrosys/domain/models/device.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:agrosys/domain/repository/app_state_repo.dart';
 

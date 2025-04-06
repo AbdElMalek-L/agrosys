@@ -9,7 +9,6 @@
  */
 
 import 'package:agrosys/domain/models/app_state.dart';
-import 'package:agrosys/domain/models/device.dart';
 
 class AppStateStorage {
   late int selectedDeviceIndex;

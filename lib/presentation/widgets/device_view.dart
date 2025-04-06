@@ -7,17 +7,12 @@
 */
 import 'package:agrosys/domain/models/app_state.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
-import 'package:agrosys/presentation/pages/add_device_page.dart';
 import 'package:agrosys/presentation/pages/devices_list_page.dart';
-import 'package:agrosys/presentation/pages/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
-import 'package:get/route_manager.dart';
 import 'package:lottie/lottie.dart';
 import 'package:agrosys/domain/models/device.dart';
 import 'package:agrosys/presentation/cubits/device_cubit.dart';
-import '../themes/colors.dart';
 import 'header.dart';
 import 'recent_activity.dart';
 
@@ -31,8 +26,8 @@ class DeviceView extends StatefulWidget {
 }
 
 class _DeviceViewState extends State<DeviceView> {
-  bool _isExpanded = false;
-  int _expansionKey = 0;
+  final bool _isExpanded = false;
+  final int _expansionKey = 0;
 
   final String controlAssetPowerOn = "assets/power_animation.json";
   final String controlAssetPowerOff = "assets/power_off.json";
@@ -92,19 +87,39 @@ class _DeviceViewState extends State<DeviceView> {
                                   ),
                                   iconColor: Colors.green[700],
                                   collapsedIconColor: Colors.green[700],
-                                  title: Text(
-                                    devices.isEmpty
-                                        ? "الجهاز"
-                                        : devices[appState.selectedDeviceIndex]
+                                  title: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        devices[appState.selectedDeviceIndex]
+                                            .model,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          color: const Color.fromARGB(
+                                            255,
+                                            66,
+                                            66,
+                                            66,
+                                          ),
+                                        ),
+                                      ),
+
+                                      Text(
+                                        devices[appState.selectedDeviceIndex]
                                             .name,
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color:
-                                          devices.isNotEmpty
-                                              ? Colors.black
-                                              : Colors.grey[600],
-                                    ),
-                                    textDirection: TextDirection.rtl,
+                                        textDirection: TextDirection.rtl,
+
+                                        style: TextStyle(
+                                          color: const Color.fromARGB(
+                                            255,
+                                            129,
+                                            129,
+                                            129,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   trailing: AnimatedRotation(
                                     turns: _isExpanded ? 0.5 : 0,
