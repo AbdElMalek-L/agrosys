@@ -5,6 +5,7 @@
   - use BlocBuilder
 
 */
+import 'package:agrosys/controllers/sent_sms.dart';
 import 'package:agrosys/domain/models/app_state.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
 import 'package:agrosys/presentation/pages/devices_list_page.dart';
@@ -54,77 +55,88 @@ class _DeviceViewState extends State<DeviceView> {
                           Hero(
                             tag: "change_selected_device",
 
-                            child: Card(
-                              elevation: 0,
-                              color: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              margin: const EdgeInsets.symmetric(
-                                horizontal: 6,
-                                vertical: 8,
-                              ),
-                              child: Theme(
-                                data: Theme.of(
-                                  context,
-                                ).copyWith(dividerColor: Colors.transparent),
-                                child: ExpansionTile(
-                                  key: ValueKey(_expansionKey),
-                                  onExpansionChanged:
-                                      (expanded) => Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder:
-                                              (context) => DevicesListPage(),
-                                        ),
-                                      ),
-                                  tilePadding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 0,
-                                  ),
-                                  childrenPadding: const EdgeInsets.only(
-                                    bottom: 12,
-                                  ),
-                                  iconColor: Colors.green[700],
-                                  collapsedIconColor: Colors.green[700],
-                                  title: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        devices[appState.selectedDeviceIndex]
-                                            .model,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: const Color.fromARGB(
-                                            255,
-                                            66,
-                                            66,
-                                            66,
+                            child: Material(
+                              type: MaterialType.transparency,
+                              child: Card(
+                                elevation: 0,
+                                color: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                margin: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 8,
+                                ),
+                                child: Theme(
+                                  data: Theme.of(
+                                    context,
+                                  ).copyWith(dividerColor: Colors.transparent),
+                                  child: ExpansionTile(
+                                    key: ValueKey(_expansionKey),
+                                    onExpansionChanged:
+                                        (expanded) => Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder:
+                                                (context) => DevicesListPage(),
                                           ),
                                         ),
-                                      ),
+                                    tilePadding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 0,
+                                    ),
+                                    childrenPadding: const EdgeInsets.only(
+                                      bottom: 12,
+                                    ),
+                                    iconColor: Colors.green[700],
+                                    collapsedIconColor: Colors.green[700],
+                                    title:
+                                        devices.isEmpty
+                                            ? Text("none")
+                                            : Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  devices[appState
+                                                          .selectedDeviceIndex]
+                                                      .model,
+                                                  style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: const Color.fromARGB(
+                                                      255,
+                                                      66,
+                                                      66,
+                                                      66,
+                                                    ),
+                                                  ),
+                                                ),
 
-                                      Text(
-                                        devices[appState.selectedDeviceIndex]
-                                            .name,
-                                        textDirection: TextDirection.rtl,
+                                                Text(
+                                                  devices[appState
+                                                          .selectedDeviceIndex]
+                                                      .name,
+                                                  textDirection:
+                                                      TextDirection.rtl,
 
-                                        style: TextStyle(
-                                          color: const Color.fromARGB(
-                                            255,
-                                            129,
-                                            129,
-                                            129,
-                                          ),
-                                        ),
+                                                  style: TextStyle(
+                                                    color: const Color.fromARGB(
+                                                      255,
+                                                      129,
+                                                      129,
+                                                      129,
+                                                    ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                    trailing: AnimatedRotation(
+                                      turns: _isExpanded ? 0.5 : 0,
+                                      duration: const Duration(
+                                        milliseconds: 300,
                                       ),
-                                    ],
-                                  ),
-                                  trailing: AnimatedRotation(
-                                    turns: _isExpanded ? 0.5 : 0,
-                                    duration: const Duration(milliseconds: 300),
-                                    child: const Icon(Icons.expand_more),
+                                      child: const Icon(Icons.expand_more),
+                                    ),
                                   ),
                                 ),
                               ),
@@ -144,13 +156,28 @@ class _DeviceViewState extends State<DeviceView> {
                                   children: [
                                     Center(
                                       child: GestureDetector(
-                                        onTap:
-                                            () => context
-                                                .read<DeviceCubit>()
-                                                .togglePower(
-                                                  devices[appState
-                                                      .selectedDeviceIndex],
-                                                ),
+                                        onTap: () {
+                                          final device =
+                                              devices[appState
+                                                  .selectedDeviceIndex];
+
+                                          context
+                                              .read<DeviceCubit>()
+                                              .togglePower(device);
+
+                                          String phoneNumber =
+                                              device.phoneNumber;
+                                          String togglePowerCmd =
+                                              device.passWord +
+                                              "#" +
+                                              (device.isPoweredOn
+                                                  ? "ON"
+                                                  : "OFF") +
+                                              "#";
+
+                                          sendSMS(phoneNumber, togglePowerCmd);
+                                        },
+
                                         child: Lottie.asset(
                                           devices[appState.selectedDeviceIndex]
                                                   .isPoweredOn

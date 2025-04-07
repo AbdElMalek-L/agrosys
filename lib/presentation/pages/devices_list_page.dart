@@ -26,12 +26,6 @@ class DevicesListPage extends StatelessWidget {
     return Column(
       spacing: 0,
       children: [
-        Divider(
-          indent: 30,
-          endIndent: 30,
-          thickness: 1,
-          color: Colors.green[100],
-        ),
         Slidable(
           key: Key(device.id.toString()),
           startActionPane: ActionPane(
@@ -109,6 +103,12 @@ class DevicesListPage extends StatelessWidget {
             ],
           ),
         ),
+        Divider(
+          indent: 30,
+          endIndent: 30,
+          thickness: 1,
+          color: Colors.green[100],
+        ),
       ],
     );
   }
@@ -157,15 +157,27 @@ class DevicesListPage extends StatelessWidget {
                     const Center(child: Header(title: "لائحة الاجهزة")),
                     Text(appState.selectedDeviceIndex.toString()),
                     const SizedBox(height: 20),
-                    ...List.generate(devices.length, (index) {
-                      final device = devices[index];
-                      return _buildDeviceItem(
-                        context,
-                        device,
-                        index, // Pass index explicitly
-                        appState,
-                      );
-                    }),
+                    Hero(
+                      tag: "change_selected_device",
+
+                      child: Material(
+                        child: SingleChildScrollView(
+                          child: Column(
+                            children: [
+                              ...List.generate(devices.length, (index) {
+                                final device = devices[index];
+                                return _buildDeviceItem(
+                                  context,
+                                  device,
+                                  index, // Pass index explicitly
+                                  appState,
+                                );
+                              }),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               );

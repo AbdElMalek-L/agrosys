@@ -5,11 +5,11 @@ import 'package:flutter_background_messenger/flutter_background_messenger.dart';
 final messenger = FlutterBackgroundMessenger();
 
 // Function to send an SMS message
-Future<void> sendSMS() async {
+Future<void> sendSMS(String phoneNumber, String cmd) async {
   try {
     final success = await messenger.sendSMS(
-      phoneNumber: '+212631200554',
-      message: 'KJDFQKHFAIUZVNJSKLDQNVGLQKJFJLKzefhu',
+      phoneNumber: phoneNumber,
+      message: cmd,
     );
 
     // Show toast message to indicate success or failure
