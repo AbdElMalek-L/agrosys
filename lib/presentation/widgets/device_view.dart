@@ -5,7 +5,6 @@
   - use BlocBuilder
 
 */
-import 'package:agrosys/controllers/sent_sms.dart';
 import 'package:agrosys/domain/models/app_state.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
 import 'package:agrosys/presentation/pages/devices_list_page.dart';
