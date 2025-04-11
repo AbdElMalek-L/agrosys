@@ -8,6 +8,7 @@
 import 'package:agrosys/controllers/sent_sms.dart';
 import 'package:agrosys/domain/models/app_state.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
+import 'package:agrosys/presentation/pages/details_screen.dart';
 import 'package:agrosys/presentation/pages/devices_list_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -196,6 +197,44 @@ class _DeviceViewState extends State<DeviceView> {
                                             ? "إيقاف التشغيل"
                                             : "تشغيل",
                                         textDirection: TextDirection.rtl,
+                                      ),
+                                    ),
+
+                                    Center(
+                                      child: Container(
+                                        width: double.infinity,
+                                        margin: const EdgeInsets.symmetric(
+                                          horizontal: 20,
+                                        ),
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.green,
+                                            padding: const EdgeInsets.symmetric(
+                                              vertical: 16,
+                                            ),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                          ),
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder:
+                                                    (context) =>
+                                                        const DetailsScreen(),
+                                              ),
+                                            );
+                                          },
+                                          child: const Text(
+                                            "إعداد توقيت التشغيل",
+                                            style: TextStyle(
+                                              fontSize: 16,
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ],
