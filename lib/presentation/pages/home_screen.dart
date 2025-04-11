@@ -1,117 +1,139 @@
-// TODO: remove this.
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-// class HomeScreen extends StatefulWidget {
-//   const HomeScreen({super.key});
+import 'details_screen.dart';
+import 'package:agrosys/controllers/device_controller.dart';
 
-//   @override
-//   _HomeScreenState createState() => _HomeScreenState();
-// }
+import '../widgets/devices_card.dart';
+import '../widgets/header.dart';
+import '../widgets/recent_activity_widget.dart';
+import '../widgets/signal_indicator.dart';
 
-// class _HomeScreenState extends State<HomeScreen> {
-//   final DeviceController deviceController = Get.put(DeviceController());
-//   bool isPowerOn = false;
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
-//   String controlAssetPowerOn = "assets/power_animation.json";
-//   String controlAssetPowerOff = "assets/power_off.json";
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
 
-//   @override
-//   void initState() {
-//     super.initState();
-//     _loadPowerState();
-//     deviceController.loadDevices(); // Ensure devices are loaded at startup
-//   }
+class _HomeScreenState extends State<HomeScreen> {
+  final DeviceController deviceController = Get.put(DeviceController());
+  bool isPowerOn = false;
 
-//   // Load saved power state from shared preferences
-//   Future<void> _loadPowerState() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     setState(() {
-//       isPowerOn = prefs.getBool('isPowerOn') ?? false;
-//     });
-//   }
+  String controlAssetPowerOn = "assets/power_animation.json";
+  String controlAssetPowerOff = "assets/power_off.json";
 
-//   // Toggle power state and send an SMS
-//   Future<void> _togglePower() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     setState(() {
-//       isPowerOn = !isPowerOn;
-//       prefs.setBool('isPowerOn', isPowerOn);
-//     });
-//     print("Power toggled: $isPowerOn"); // Debugging log
-//     sendSMS();
-//   }
+  @override
+  void initState() {
+    super.initState();
+    _loadPowerState();
+    deviceController.loadDevices();
+  }
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: const Color(0xfff6fcf8),
-//       body: SafeArea(
-//         child: SingleChildScrollView(
-//           child: Padding(
-//             padding: const EdgeInsets.all(16.0),
-//             child: Column(
-//               crossAxisAlignment: CrossAxisAlignment.start,
-//               children: [
-//                 Center(child: Header(title: "لوحة التحكم")),
-//                 SizedBox(height: 20),
+  Future<void> _loadPowerState() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isPowerOn = prefs.getBool('isPowerOn') ?? false;
+    });
+  }
 
-//                 // Display devices dynamically using GetX
-//                 Obx(() => DevicesCard()),
+  Future<void> _togglePower() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isPowerOn = !isPowerOn;
+      prefs.setBool('isPowerOn', isPowerOn);
+    });
+    sendSMS();
+  }
 
-//                 SizedBox(height: 20),
+  void sendSMS() {
+    // Your logic to send SMS to RTU5024
+    print("Sending SMS to RTU5024...");
+  }
 
-//                 const SignalIndicator(),
-//                 SizedBox(height: 20),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xfff6fcf8),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: double.infinity,
+                    margin: const EdgeInsets.symmetric(horizontal: 20),
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const DetailsScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        "إعداد توقيت التشغيل",
+                        style: TextStyle(fontSize: 16, color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
 
-//                 // Animated power button
-//                 Center(
-//                   child: GestureDetector(
-//                     onTap: _togglePower,
-//                     child: Lottie.asset(
-//                       isPowerOn ? controlAssetPowerOff : controlAssetPowerOn,
-//                       height: 150,
-//                       width: 150,
-//                       fit: BoxFit.cover,
-//                     ),
-//                   ),
-//                 ),
-//                 // Status text
-//                 Center(
-//                   child: Text(
-//                     isPowerOn ? "إيقاف التشغيل" : "تشغيل",
-//                     textDirection: TextDirection.rtl,
-//                   ),
-//                 ),
-//                 const RecentActivityWidget(),
-//               ],
-//             ),
-//           ),
-//         ),
-//       ),
-//     );
-//   }
-// }
+                Center(child: Header(title: "لوحة التحكم")),
 
-// class SignalIndicator extends StatelessWidget {
-//   const SignalIndicator({super.key});
+                const SizedBox(height: 20),
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       padding: EdgeInsets.all(16),
-//       decoration: BoxDecoration(
-//         color: Colors.white,
-//         borderRadius: BorderRadius.circular(16),
-//       ),
-//       child: Row(
-//         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//         children: [
-//           Icon(Icons.signal_cellular_alt, color: Colors.green),
-//           Text(
-//             "متصل",
-//             style: TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
+                Obx(() => DevicesCard()),
+
+                const SizedBox(height: 20),
+
+                const SignalIndicator(),
+
+                const SizedBox(height: 20),
+
+                Center(
+                  child: GestureDetector(
+                    onTap: _togglePower,
+                    child: Lottie.asset(
+                      isPowerOn ? controlAssetPowerOff : controlAssetPowerOn,
+                      height: 150,
+                      width: 150,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+
+                Center(
+                  child: Text(
+                    isPowerOn ? "إيقاف التشغيل" : "تشغيل",
+                    textDirection: TextDirection.rtl,
+                  ),
+                ),
+
+                const SizedBox(height: 20),
+
+                // BOUTON RESPONSIVE POUR DETAILS SCREEN
+                const SizedBox(height: 20),
+
+                const RecentActivityWidget(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
