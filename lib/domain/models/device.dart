@@ -64,4 +64,32 @@ class Device {
       signal: signal,
     );
   }
+
+  Device updateDeviceDetails(Device device) {
+    return Device(
+      id: device.id,
+      model: device.model,
+      name: device.name,
+      phoneNumber: device.phoneNumber,
+      passWord: device.passWord,
+      isPoweredOn: device.isPoweredOn,
+      signal: device.signal,
+    );
+  }
+
+  Device copyWith({
+    int? id,
+    String? name,
+    String? model,
+    String? phoneNumber,
+    String? passWord,
+  }) {
+    return Device(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      model: model ?? this.model,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      passWord: passWord ?? this.passWord,
+    );
+  }
 }

@@ -4,7 +4,6 @@ import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
 import 'package:agrosys/presentation/cubits/device_cubit.dart';
 import 'package:agrosys/presentation/pages/add_device_page.dart';
 import 'package:agrosys/presentation/pages/settings_page.dart';
-import 'package:agrosys/presentation/themes/colors.dart';
 import 'package:agrosys/presentation/widgets/header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -70,7 +69,7 @@ class DevicesListPage extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                         color:
                             appState.selectedDeviceIndex == index
-                                ? mainColor
+                                ? Theme.of(context).colorScheme.primary
                                 : const Color.fromARGB(255, 66, 66, 66),
                       ),
                     ),
@@ -82,7 +81,7 @@ class DevicesListPage extends StatelessWidget {
                       style: TextStyle(
                         color:
                             appState.selectedDeviceIndex == index
-                                ? mainColor
+                                ? Theme.of(context).colorScheme.primary
                                 : const Color.fromARGB(255, 129, 129, 129),
                       ),
                     ),
@@ -90,7 +89,10 @@ class DevicesListPage extends StatelessWidget {
                 ),
                 trailing:
                     appState.selectedDeviceIndex == index
-                        ? Icon(Icons.check_circle, color: mainColor)
+                        ? Icon(
+                          Icons.check_circle,
+                          color: Theme.of(context).colorScheme.primary,
+                        )
                         : null,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
@@ -136,7 +138,7 @@ class DevicesListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        backgroundColor: mainColor,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         child: Icon(Icons.add, color: Colors.white),
 
         onPressed:

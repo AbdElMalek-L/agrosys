@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../themes/colors.dart';
 
 // TODO: remove this.
 
@@ -53,7 +52,12 @@ class _DeviceModelsCardState extends State<DeviceModelsCard> {
             child: const Icon(Icons.expand_more),
           ),
           children: [
-            Divider(indent: 30, endIndent: 30, thickness: 1, color: mainColor),
+            Divider(
+              indent: 30,
+              endIndent: 30,
+              thickness: 1,
+              color: Theme.of(context).colorScheme.primary,
+            ),
             ...widget.models.map((model) => _buildModelItem(model)),
           ],
         ),
@@ -70,12 +74,18 @@ class _DeviceModelsCardState extends State<DeviceModelsCard> {
             textDirection: TextDirection.rtl,
             style: TextStyle(
               fontWeight: FontWeight.w500,
-              color: _selectedModel == model ? mainColor : Colors.black,
+              color:
+                  _selectedModel == model
+                      ? Theme.of(context).colorScheme.primary
+                      : Colors.black,
             ),
           ),
           trailing:
               _selectedModel == model
-                  ? Icon(Icons.check_circle, color: mainColor)
+                  ? Icon(
+                    Icons.check_circle,
+                    color: Theme.of(context).colorScheme.primary,
+                  )
                   : null,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
@@ -88,7 +98,12 @@ class _DeviceModelsCardState extends State<DeviceModelsCard> {
             widget.onModelSelected?.call(model);
           },
         ),
-        Divider(indent: 30, endIndent: 30, thickness: 1, color: mainColor),
+        Divider(
+          indent: 30,
+          endIndent: 30,
+          thickness: 1,
+          color: Theme.of(context).colorScheme.primary,
+        ),
       ],
     );
   }

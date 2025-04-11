@@ -168,12 +168,7 @@ class _DeviceViewState extends State<DeviceView> {
                                           String phoneNumber =
                                               device.phoneNumber;
                                           String togglePowerCmd =
-                                              device.passWord +
-                                              "#" +
-                                              (device.isPoweredOn
-                                                  ? "ON"
-                                                  : "OFF") +
-                                              "#";
+                                              "${device.passWord}#${device.isPoweredOn ? "ON" : "OFF"}#";
 
                                           sendSMS(phoneNumber, togglePowerCmd);
                                         },
@@ -216,4 +211,6 @@ class _DeviceViewState extends State<DeviceView> {
       ),
     );
   }
+
+  void sendSMS(String phoneNumber, String togglePowerCmd) {}
 }

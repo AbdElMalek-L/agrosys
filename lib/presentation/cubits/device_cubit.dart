@@ -10,30 +10,23 @@ import 'package:agrosys/domain/repository/device_repo.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DeviceCubit extends Cubit<List<Device>> {
-  // Reference device repo
   final DeviceRepo deviceRepo;
 
-  // Constructor initializes the cubit with an empty list
   DeviceCubit(this.deviceRepo) : super([]) {
     loadDevices();
   }
 
-  // load
   Future<void> loadDevices() async {
     final devicesList = await deviceRepo.getDevices();
-
-    // emit teh fetched list as the new state
     emit(devicesList);
   }
 
-  // add
   Future<void> addDevice(
     String model,
     String name,
     String phoneNumber,
     String passWord,
   ) async {
-    // create a new device with a unique id
     final newDevice = Device(
       id: DateTime.now().millisecondsSinceEpoch,
       model: model,
@@ -42,43 +35,64 @@ class DeviceCubit extends Cubit<List<Device>> {
       passWord: passWord,
     );
 
-    // save the new device to repo
     await deviceRepo.addDevice(newDevice);
-
-    // reload
     loadDevices();
   }
 
-  // Delete
   Future<void> deleteDevice(Device device) async {
-    // delete the device from the repo
     await deviceRepo.deleteDevice(device);
-
-    // reload
     loadDevices();
   }
 
-  // Toggle
   Future<void> togglePower(Device device) async {
-    // toggle the power state
     final updatedDevice = device.togglePower();
-
-    // update the device in the repo
     await deviceRepo.updateDevice(updatedDevice);
 
-    //reload
-    loadDevices();
+    // Optimistic update
+    final newState = List<Device>.from(state);
+    final index = newState.indexWhere((d) => d.id == device.id);
+    if (index != -1) {
+      newState[index] = updatedDevice;
+      emit(newState);
+    }
+
+    // Still sync with repo
+    await deviceRepo.updateDevice(updatedDevice);
   }
 
-  // update signal
   Future<void> updateSignal(Device device, int signal) async {
-    // update signal
     final updatedDevice = device.updateSignal(signal);
 
-    // update the device in the repo
-    await deviceRepo.updateDevice(updatedDevice);
+    // Optimistic update
+    final newState = List<Device>.from(state);
+    final index = newState.indexWhere((d) => d.id == device.id);
+    if (index != -1) {
+      newState[index] = updatedDevice;
+      emit(newState);
+    }
 
-    // reload
-    loadDevices();
+    await deviceRepo.updateDevice(updatedDevice);
+  }
+
+  Future<void> updateDevice(Device oldDevice, Device newDevice) async {
+    // First update local state for immediate UI update
+    final newState = List<Device>.from(state);
+    final index = newState.indexWhere((d) => d.id == oldDevice.id);
+
+    if (index != -1) {
+      // Create updated device with new properties but keep the same ID
+      final updatedDevice = oldDevice.copyWith(
+        name: newDevice.name,
+        phoneNumber: newDevice.phoneNumber,
+        passWord: newDevice.passWord,
+        // include other properties as needed
+      );
+
+      newState[index] = updatedDevice;
+      emit(newState);
+
+      // Then update in repository
+      await deviceRepo.updateDevice(updatedDevice);
+    }
   }
 }

@@ -1,11 +1,8 @@
 import 'package:agrosys/domain/models/device.dart';
-import 'package:agrosys/presentation/themes/colors.dart';
 import 'package:agrosys/presentation/widgets/header.dart';
 import 'package:flutter/material.dart';
-
-// TODO: this was made using AI refactor it to work proparlly!!
-
-// TODO: do st.
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubits/device_cubit.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key, required this.device});
@@ -31,7 +28,9 @@ class _SettingsPageState extends State<SettingsPage> {
     _currentDevice = widget.device;
     _nameController = TextEditingController(text: _currentDevice.name);
     _phoneController = TextEditingController(text: _currentDevice.phoneNumber);
-    _oldPasswordController = TextEditingController();
+    _oldPasswordController = TextEditingController(
+      text: _currentDevice.passWord,
+    );
     _newPasswordController = TextEditingController();
   }
 
@@ -44,16 +43,17 @@ class _SettingsPageState extends State<SettingsPage> {
     super.dispose();
   }
 
-  void _updateDeviceName() {
+  void _updateDevice(Device updatedDevice) {
     setState(() {
-      _currentDevice = Device(
-        id: _currentDevice.id,
-        name: _nameController.text,
-        model: _currentDevice.model,
-        phoneNumber: _currentDevice.phoneNumber,
-        passWord: _currentDevice.passWord,
-      );
+      _currentDevice = updatedDevice;
     });
+    context.read<DeviceCubit>().updateDevice(widget.device, updatedDevice);
+  }
+
+  void _updateDeviceName() {
+    final updatedDevice = _currentDevice.copyWith(name: _nameController.text);
+    _updateDevice(updatedDevice);
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('تم تحديث الاسم إلى ${_nameController.text}'),
@@ -63,15 +63,11 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _updatePhoneNumber() {
-    setState(() {
-      _currentDevice = Device(
-        id: _currentDevice.id,
-        name: _currentDevice.name,
-        model: _currentDevice.model,
-        phoneNumber: _phoneController.text,
-        passWord: _currentDevice.passWord,
-      );
-    });
+    final updatedDevice = _currentDevice.copyWith(
+      phoneNumber: _phoneController.text,
+    );
+    _updateDevice(updatedDevice);
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('تم تحديث الرقم إلى ${_phoneController.text}'),
@@ -91,15 +87,10 @@ class _SettingsPageState extends State<SettingsPage> {
       return;
     }
 
-    setState(() {
-      _currentDevice = Device(
-        id: _currentDevice.id,
-        name: _currentDevice.name,
-        model: _currentDevice.model,
-        phoneNumber: _currentDevice.phoneNumber,
-        passWord: _newPasswordController.text,
-      );
-    });
+    final updatedDevice = _currentDevice.copyWith(
+      passWord: _newPasswordController.text,
+    );
+    _updateDevice(updatedDevice);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -130,19 +121,23 @@ class _SettingsPageState extends State<SettingsPage> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
                       content: Text('تم حذف ${_currentDevice.name}'),
-                      backgroundColor: mainColor,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                     ),
                   );
                   Navigator.pop(context, true);
                 },
-                child: Text('حذف', style: TextStyle(color: mainColor)),
+                child: Text(
+                  'حذف',
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                ),
               ),
             ],
           ),
     );
   }
 
-  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -179,7 +174,7 @@ class _SettingsPageState extends State<SettingsPage> {
               ElevatedButton(
                 onPressed: _confirmDelete,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: mainColor,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 50),
                 ),
@@ -203,9 +198,6 @@ class _SettingsPageState extends State<SettingsPage> {
     TextInputType? keyboardType,
     required VoidCallback onPressed,
   }) {
-    // TODO: search this!!
-    // final mainColor = Theme.of(context).colorScheme.primary;
-
     return Card(
       elevation: 0,
       child: Padding(
@@ -231,7 +223,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ElevatedButton(
               onPressed: onPressed,
               style: ElevatedButton.styleFrom(
-                backgroundColor: mainColor,
+                backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Colors.white,
               ),
               child: const Text('تحديث'),
@@ -268,7 +260,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           _oldPasswordVisible
                               ? Icons.visibility_off
                               : Icons.visibility,
-                          color: mainColor,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                         onPressed:
                             () => setState(
@@ -294,7 +286,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           _newPasswordVisible
                               ? Icons.visibility_off
                               : Icons.visibility,
-                          color: mainColor,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                         onPressed:
                             () => setState(
@@ -312,7 +304,7 @@ class _SettingsPageState extends State<SettingsPage> {
               child: ElevatedButton(
                 onPressed: _updatePassword,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: mainColor,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: Colors.white,
                 ),
                 child: const Text('تحديث كلمة المرور'),

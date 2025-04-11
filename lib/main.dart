@@ -63,9 +63,25 @@ class MyApp extends StatelessWidget {
         ],
         child: MaterialApp(
           theme: ThemeData(
-            primarySwatch: Colors.green,
-            scaffoldBackgroundColor: const Color.fromARGB(255, 234, 241, 234),
+            useMaterial3: true,
+            colorScheme: const ColorScheme(
+              brightness: Brightness.light,
+              primary: Color(0xff009200), // Your green
+              onPrimary: Colors.white,
+              secondary: Color(0xFF004B23),
+              onSecondary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.black,
+              error: Colors.red,
+              onError: Colors.white,
+            ),
+            scaffoldBackgroundColor: Color(0xFFEAF1EA),
+            snackBarTheme: SnackBarThemeData(
+              backgroundColor: Color(0xFF0A8754),
+              contentTextStyle: TextStyle(color: Colors.white),
+            ),
           ),
+
           debugShowCheckedModeBanner: false,
           home: const IntroPage(),
         ),

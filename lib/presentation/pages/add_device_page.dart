@@ -3,20 +3,32 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 import '../widgets/device_models_card.dart';
-import '../themes/colors.dart';
 import '../widgets/header.dart';
 
 // TODO: fix the cubit dont refreshing when new device added
 // TODO: add the new device as default selected in dashboard screen when saving.
 
-class AddDevicePage extends StatelessWidget {
-  AddDevicePage({super.key});
+class AddDevicePage extends StatefulWidget {
+  const AddDevicePage({super.key});
 
+  @override
+  State<AddDevicePage> createState() => _AddDevicePageState();
+}
+
+class _AddDevicePageState extends State<AddDevicePage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _deviceNameController = TextEditingController();
   final TextEditingController _deviceNumberController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String? _selectedModel;
+
+  @override
+  void dispose() {
+    _deviceNameController.dispose();
+    _deviceNumberController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +37,7 @@ class AddDevicePage extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            Center(child: Header(title: "إضافة جهاز جديد")),
+            const Center(child: Header(title: "إضافة جهاز جديد")),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -44,7 +56,7 @@ class AddDevicePage extends StatelessWidget {
                 onPressed: () => _addDevice(context),
                 style: ElevatedButton.styleFrom(
                   elevation: 0,
-                  backgroundColor: const Color(0xFF009200),
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   padding: const EdgeInsets.symmetric(
                     horizontal: 60,
                     vertical: 14,
@@ -92,7 +104,11 @@ class AddDevicePage extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
               child: DeviceModelsCard(
                 models: const ["RTU5024", "AGROS001", "MODEL003"],
-                onModelSelected: (model) => _selectedModel = model,
+                onModelSelected: (model) {
+                  setState(() {
+                    _selectedModel = model;
+                  });
+                },
               ),
             ),
             _buildInputField('اسم الجهاز', _deviceNameController),
@@ -126,7 +142,10 @@ class AddDevicePage extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(8)),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: mainColor, width: 2.0),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.primary,
+              width: 2.0,
+            ),
             borderRadius: const BorderRadius.all(Radius.circular(8)),
           ),
         ),
