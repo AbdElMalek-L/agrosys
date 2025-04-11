@@ -10,7 +10,7 @@ import 'package:agrosys/domain/repository/device_repo.dart';
 import 'package:agrosys/presentation/pages/intro_page.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
 
-// none
+// none nnn
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
