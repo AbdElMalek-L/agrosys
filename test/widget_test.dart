@@ -5,15 +5,41 @@
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
 
+import 'package:agrosys/data/repository/app_state_repo.dart';
+import 'package:agrosys/data/repository/device_storage_repo.dart';
+import 'package:agrosys/domain/repository/app_state_repo.dart';
+import 'package:agrosys/domain/repository/device_repo.dart';
+import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
+import 'package:agrosys/presentation/cubits/device_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:agrosys/main.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+    // Setup SharedPreferences for testing
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+
+    // Create repository instances
+    final DeviceRepo deviceRepo = DeviceStorageRepo(prefs);
+    final AppStateRepo appStateRepo = AppStateStorageRepo(prefs);
+
+    // Create cubit instances
+    final DeviceCubit deviceCubit = DeviceCubit(deviceRepo);
+    final AppStateCubit appStateCubit = AppStateCubit(appStateRepo);
+
     // Build our app and trigger a frame.
-    await tester.pumpWidget(MyApp());
+    await tester.pumpWidget(
+      MyApp(
+        deviceRepo: deviceRepo,
+        appStateRepo: appStateRepo,
+        deviceCubit: deviceCubit,
+        appStateCubit: appStateCubit,
+      ),
+    );
 
     // Verify that our counter starts at 0.
     expect(find.text('0'), findsOneWidget);

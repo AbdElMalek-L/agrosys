@@ -5,6 +5,8 @@
   - use BlocBuilder
 
 */
+import 'dart:developer' as developer;
+import 'package:agrosys/controllers/sms_controller.dart';
 import 'package:agrosys/domain/models/app_state.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
 import 'package:agrosys/presentation/pages/devices_list_page.dart';
@@ -28,6 +30,7 @@ class DeviceView extends StatefulWidget {
 class _DeviceViewState extends State<DeviceView> {
   final bool _isExpanded = false;
   final int _expansionKey = 0;
+  final SMSController _smsController = SMSController();
 
   final String controlAssetPowerOn = "assets/power_animation.json";
   final String controlAssetPowerOff = "assets/power_off.json";
@@ -211,5 +214,39 @@ class _DeviceViewState extends State<DeviceView> {
     );
   }
 
-  void sendSMS(String phoneNumber, String togglePowerCmd) {}
+  void sendSMS(String phoneNumber, String command) {
+    _smsController.sendCommandWithResponse(
+      context: context,
+      phoneNumber: phoneNumber,
+      command: command,
+      onMessage: (message) {
+        // Log the message instead of showing a snackbar
+        developer.log(message, name: 'SMSController');
+      },
+      onResult: (success, response) {
+        if (success) {
+          // SMS sent and response received successfully
+          developer.log(
+            "SMS command successful: $response",
+            name: 'DeviceView',
+          );
+
+          // You can access the SMS history if needed
+          final sentMessages = _smsController.getSentSMSForPhoneNumber(
+            phoneNumber,
+          );
+          if (sentMessages.isNotEmpty) {
+            final lastMessage = sentMessages.last;
+            developer.log(
+              "Last SMS to $phoneNumber: ${lastMessage.message}, Response: ${lastMessage.response}",
+              name: 'DeviceView',
+            );
+          }
+        } else {
+          // SMS failed to send or no response received
+          developer.log("SMS command failed", name: 'DeviceView');
+        }
+      },
+    );
+  }
 }
