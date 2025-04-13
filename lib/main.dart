@@ -9,6 +9,7 @@ import 'package:agrosys/domain/repository/app_state_repo.dart';
 import 'package:agrosys/domain/repository/device_repo.dart';
 import 'package:agrosys/presentation/pages/intro_page.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
+import 'package:agrosys/presentation/themes/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,29 +62,16 @@ class MyApp extends StatelessWidget {
           BlocProvider<AppStateCubit>.value(value: appStateCubit),
           BlocProvider<DeviceCubit>.value(value: deviceCubit),
         ],
-        child: MaterialApp(
-          theme: ThemeData(
-            useMaterial3: true,
-            colorScheme: const ColorScheme(
-              brightness: Brightness.light,
-              primary: Color(0xff009200), // Your green
-              onPrimary: Colors.white,
-              secondary: Color(0xFF004B23),
-              onSecondary: Colors.white,
-              surface: Colors.white,
-              onSurface: Colors.black,
-              error: Colors.red,
-              onError: Colors.white,
-            ),
-            scaffoldBackgroundColor: Color(0xFFEAF1EA),
-            snackBarTheme: SnackBarThemeData(
-              backgroundColor: Color(0xFF0A8754),
-              contentTextStyle: TextStyle(color: Colors.white),
-            ),
-          ),
-
-          debugShowCheckedModeBanner: false,
-          home: IntroPage(), // Use HomeScreen as the home
+        child: BlocBuilder<AppStateCubit, AppState>(
+          builder: (context, appState) {
+            return MaterialApp(
+              theme: AppTheme.lightTheme,
+              darkTheme: AppTheme.darkTheme,
+              themeMode: appState.darkMode ? ThemeMode.dark : ThemeMode.light,
+              debugShowCheckedModeBanner: false,
+              home: const IntroPage(),
+            );
+          },
         ),
       ),
     );

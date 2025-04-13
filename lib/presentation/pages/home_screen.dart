@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:agrosys/domain/models/device.dart';
 import 'package:agrosys/presentation/cubits/device_cubit.dart';
+import '../widgets/app_drawer.dart';
 import '../widgets/device_selector_tile.dart';
 import '../widgets/header.dart';
 import '../widgets/power_control_button.dart'; // Import the new widget
@@ -41,6 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const AppDrawer(),
       body: BlocBuilder<AppStateCubit, AppState>(
         builder: (context, appState) {
           // Listens to AppStateCubit for changes in the selected device index.
