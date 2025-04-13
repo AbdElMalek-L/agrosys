@@ -43,7 +43,7 @@ class AppState {
   AppState setSelectedDevice(int index) {
     return AppState(
       selectedDeviceIndex: index,
-      darkMode: !darkMode,
+      darkMode: darkMode,
       seenIntro: seenIntro,
     );
   }

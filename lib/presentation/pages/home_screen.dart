@@ -55,7 +55,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     SizedBox(height: 20),
                     const Center(child: Header(title: "لوحة التحكم")),
-                    Text(appState.selectedDeviceIndex.toString()),
                     const SizedBox(height: 20),
                     Expanded(
                       child: ListView(
@@ -81,6 +80,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               // Pass the sendSMS method as the callback
                               onTogglePower: sendSMS,
                             ),
+                          const SizedBox(height: 30),
+
                           const RecentActivityWidget(),
                         ],
                       ),

@@ -1,3 +1,4 @@
+import 'package:agrosys/domain/models/app_state.dart';
 import 'package:agrosys/presentation/cubits/device_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

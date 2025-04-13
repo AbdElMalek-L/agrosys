@@ -2,6 +2,7 @@ import 'package:agrosys/presentation/cubits/device_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
+import 'package:intl_phone_field/intl_phone_field.dart';
 import '../widgets/device_models_card.dart';
 import '../widgets/header.dart';
 
@@ -33,7 +34,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xfff6fcf8),
+      backgroundColor: Theme.of(context).colorScheme.background,
       body: SafeArea(
         child: Column(
           children: [
@@ -111,16 +112,73 @@ class _AddDevicePageState extends State<AddDevicePage> {
                 },
               ),
             ),
-            _buildInputField('اسم الجهاز', _deviceNameController),
-            _buildInputField('رقم الخاص بجهاز', _deviceNumberController),
-            _buildInputField('الرقم السري', _passwordController),
+            _buildInputField(
+              'اسم الجهاز',
+              _deviceNameController,
+              icon: Icons.devices,
+            ),
+            _buildInputField(
+              'رقم الخاص بجهاز',
+              _deviceNumberController,
+              icon: Icons.phone_android,
+              isPhone: true,
+            ),
+            _buildInputField(
+              'الرقم السري',
+              _passwordController,
+              icon: Icons.lock,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInputField(String label, TextEditingController controller) {
+  Widget _buildInputField(
+    String label,
+    TextEditingController controller, {
+    IconData? icon,
+    bool isPhone = false,
+  }) {
+    if (isPhone) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+        child: IntlPhoneField(
+          controller: controller,
+          textAlign: TextAlign.right,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surface,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+            labelText: label,
+            labelStyle: TextStyle(
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
+            prefixIcon: icon != null ? Icon(icon) : null,
+            floatingLabelBehavior: FloatingLabelBehavior.auto,
+            enabledBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.transparent),
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
+                width: 2.0,
+              ),
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+            ),
+          ),
+          initialCountryCode: 'MA',
+          onChanged: (phone) {
+            controller.text = phone.completeNumber;
+          },
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
       child: TextFormField(
@@ -129,13 +187,16 @@ class _AddDevicePageState extends State<AddDevicePage> {
         textDirection: TextDirection.rtl,
         decoration: InputDecoration(
           filled: true,
-          fillColor: Colors.white,
+          fillColor: Theme.of(context).colorScheme.surface,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
             vertical: 12,
           ),
           labelText: label,
-          labelStyle: TextStyle(color: Colors.grey[600]),
+          prefixIcon: icon != null ? Icon(icon) : null,
+          labelStyle: TextStyle(
+            color: Theme.of(context).textTheme.bodyLarge?.color,
+          ),
           floatingLabelBehavior: FloatingLabelBehavior.auto,
           enabledBorder: const OutlineInputBorder(
             borderSide: BorderSide(color: Colors.transparent),

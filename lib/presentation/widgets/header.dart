@@ -15,26 +15,13 @@ class Header extends StatelessWidget {
     // Use the primary color from the theme for consistency
     final Color primaryColor = Theme.of(context).colorScheme.primary;
 
-    return Row(
-      children: [
-        IconButton(
-          icon: Icon(
-            Icons.menu,
-            color: primaryColor,
-          ),
-          onPressed: () {
-            Scaffold.of(context).openDrawer();
-          },
-        ),
-        Text(
-          title,
-          style: TextStyle(
-            color: primaryColor, // Use theme color
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ],
+    return Text(
+      title,
+      style: TextStyle(
+        color: primaryColor, // Use theme color
+        fontSize: 24,
+        fontWeight: FontWeight.bold,
+      ),
     );
   }
 }

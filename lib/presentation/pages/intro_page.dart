@@ -1,6 +1,7 @@
 import 'package:agrosys/domain/models/device.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'home_screen.dart';
 
 // TODO: add saving that the user seen the intro.
@@ -10,16 +11,27 @@ List<Device?> devices = [];
 class IntroPage extends StatelessWidget {
   const IntroPage({super.key});
 
+  Future<void> _completeIntro(BuildContext context) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('hasSeenIntro', true);
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const HomeScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    final isSmallScreen = screenWidth < 600;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: LayoutBuilder(
         builder: (context, constraints) {
-          double screenWidth = MediaQuery.of(context).size.width;
-          double screenHeight = MediaQuery.of(context).size.height;
-          bool isSmallScreen = screenWidth < 600;
-
           return Center(
             child: Padding(
               padding: EdgeInsets.symmetric(
@@ -30,7 +42,6 @@ class IntroPage extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Animated Lottie file
                   Expanded(
                     child: Column(
                       textDirection: TextDirection.rtl,
@@ -40,26 +51,26 @@ class IntroPage extends StatelessWidget {
                         Lottie.asset(
                           'assets/lottie_animation.json',
                           height: screenHeight * 0.4,
+                          repeat: true,
+                          animate: true,
                         ),
                         SizedBox(height: isSmallScreen ? 40 : 70),
-                        // App title
                         Text(
                           "AgroSys: تحكم ذكي في الري",
                           style: TextStyle(
                             fontSize: isSmallScreen ? 20 : 24,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF009200),
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                           textAlign: TextAlign.center,
                           textDirection: TextDirection.rtl,
                         ),
                         SizedBox(height: isSmallScreen ? 10 : 20),
-                        // Description text
                         Text(
                           "قم بإدارة نظام الري الخاص بك بسهولة باستخدام أوامر SMS تلقائية. راقب وتحكم في أجهزتك عن بُعد لتحقيق إدارة مياه فعالة.",
                           style: TextStyle(
                             fontSize: isSmallScreen ? 14 : 16,
-                            color: Colors.black87,
+                            color: isDark ? Colors.grey[300] : Colors.black87,
                           ),
                           textAlign: TextAlign.center,
                           textDirection: TextDirection.rtl,
@@ -67,18 +78,11 @@ class IntroPage extends StatelessWidget {
                       ],
                     ),
                   ),
-                  // Start button
                   ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()),
-                      );
-                    },
-
+                    onPressed: () => _completeIntro(context),
                     style: ElevatedButton.styleFrom(
                       elevation: 0,
-                      backgroundColor: Color(0xFF009200),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       padding: EdgeInsets.symmetric(
                         horizontal: isSmallScreen ? 60 : 80,
                         vertical: isSmallScreen ? 15 : 20,
@@ -89,7 +93,7 @@ class IntroPage extends StatelessWidget {
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: const [
                         Icon(
                           Icons.arrow_back_outlined,
                           size: 20,
@@ -100,14 +104,14 @@ class IntroPage extends StatelessWidget {
                           "ابدأ",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: isSmallScreen ? 18 : 20,
+                            fontSize: 18,
                             color: Colors.white,
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                 ],
               ),
             ),

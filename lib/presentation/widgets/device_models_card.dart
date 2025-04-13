@@ -31,26 +31,30 @@ class _DeviceModelsCardState extends State<DeviceModelsCard> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return Card(
       elevation: 0,
-      color: Colors.white,
+      color: theme.cardColor,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
       child: Theme(
-        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        data: theme.copyWith(dividerColor: Colors.transparent),
         child: ExpansionTile(
-          key: ValueKey(_expansionKey), // Key to force rebuild
+          key: ValueKey(_expansionKey),
           onExpansionChanged:
               (expanded) => setState(() => _isExpanded = expanded),
           tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
           childrenPadding: const EdgeInsets.only(bottom: 12),
-          iconColor: Colors.green[700],
-          collapsedIconColor: Colors.green[700],
+          iconColor: theme.colorScheme.primary,
+          collapsedIconColor: theme.colorScheme.primary,
           title: Text(
             _selectedModel ?? "طراز الجهاز",
             style: TextStyle(
               fontSize: 16,
-              color: _selectedModel != null ? Colors.black : Colors.grey[600],
+              color:
+                  _selectedModel != null
+                      ? theme.textTheme.bodyLarge?.color
+                      : theme.textTheme.bodyLarge?.color?.withOpacity(0.6),
             ),
             textDirection: TextDirection.rtl,
           ),
@@ -74,6 +78,7 @@ class _DeviceModelsCardState extends State<DeviceModelsCard> {
   }
 
   Widget _buildModelItem(String model) {
+    final theme = Theme.of(context);
     return Column(
       children: [
         ListTile(
@@ -84,16 +89,13 @@ class _DeviceModelsCardState extends State<DeviceModelsCard> {
               fontWeight: FontWeight.w500,
               color:
                   _selectedModel == model
-                      ? Theme.of(context).colorScheme.primary
-                      : Colors.black,
+                      ? theme.colorScheme.primary
+                      : theme.textTheme.bodyLarge?.color,
             ),
           ),
           trailing:
               _selectedModel == model
-                  ? Icon(
-                    Icons.check_circle,
-                    color: Theme.of(context).colorScheme.primary,
-                  )
+                  ? Icon(Icons.check_circle, color: theme.colorScheme.primary)
                   : null,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
