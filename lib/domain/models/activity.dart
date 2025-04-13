@@ -1,27 +1,49 @@
 /*
 
-DEVICE MODEL
+ACTIVITY MODEL
 
-This a device object 
+This is an activity object that represents a device action or state change
 ________________________________________________________________________________
 
-It has these propeties:
+It has these properties:
 
 - id
-- model
-- name
-- phoneNumber
-- passWord
-- isPowredOn
-- signal
+- deviceId
+- type
+- timestamp
+- description
 ________________________________________________________________________________
-
-Methodes:
-
-- toggle power on and off
 
 */
 
 class Activity {
-  final String Name = "";
+  final int id;
+  final int deviceId;
+  final String type;
+  final DateTime timestamp;
+  final String description;
+
+  Activity({
+    required this.id,
+    required this.deviceId,
+    required this.type,
+    required this.timestamp,
+    required this.description,
+  });
+
+  Activity copyWith({
+    int? id,
+    int? deviceId,
+    String? type,
+    DateTime? timestamp,
+    String? description,
+  }) {
+    return Activity(
+      id: id ?? this.id,
+      deviceId: deviceId ?? this.deviceId,
+      type: type ?? this.type,
+      timestamp: timestamp ?? this.timestamp,
+      description: description ?? this.description,
+    );
+  }
 }

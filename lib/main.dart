@@ -9,6 +9,7 @@ import 'package:agrosys/domain/repository/app_state_repo.dart';
 import 'package:agrosys/domain/repository/device_repo.dart';
 import 'package:agrosys/presentation/pages/intro_page.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
+import 'package:agrosys/presentation/cubits/theme_cubit.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -23,6 +24,7 @@ void main() async {
   // Create cubit instances
   final DeviceCubit deviceCubit = DeviceCubit(deviceRepo);
   final AppStateCubit appStateCubit = AppStateCubit(appStateRepo);
+  final ThemeCubit themeCubit = ThemeCubit(prefs);
 
   // Run the app with providers
   runApp(
@@ -31,6 +33,7 @@ void main() async {
       appStateRepo: appStateRepo,
       deviceCubit: deviceCubit,
       appStateCubit: appStateCubit,
+      themeCubit: themeCubit,
     ),
   );
 }
@@ -40,6 +43,7 @@ class MyApp extends StatelessWidget {
   final AppStateRepo appStateRepo;
   final DeviceCubit deviceCubit;
   final AppStateCubit appStateCubit;
+  final ThemeCubit themeCubit;
 
   const MyApp({
     super.key,
@@ -47,6 +51,7 @@ class MyApp extends StatelessWidget {
     required this.appStateRepo,
     required this.deviceCubit,
     required this.appStateCubit,
+    required this.themeCubit,
   });
 
   @override
@@ -60,9 +65,12 @@ class MyApp extends StatelessWidget {
         providers: [
           BlocProvider<AppStateCubit>.value(value: appStateCubit),
           BlocProvider<DeviceCubit>.value(value: deviceCubit),
+          BlocProvider<ThemeCubit>.value(value: themeCubit),
         ],
-        child: MaterialApp(
-          theme: ThemeData(
+        child: BlocBuilder<ThemeCubit, bool>(
+          builder: (context, isDarkMode) {
+            return MaterialApp(
+              theme: ThemeData(
             useMaterial3: true,
             colorScheme: const ColorScheme(
               brightness: Brightness.light,
@@ -82,8 +90,30 @@ class MyApp extends StatelessWidget {
             ),
           ),
 
-          debugShowCheckedModeBanner: false,
-          home: const IntroPage(),
+              debugShowCheckedModeBanner: false,
+              darkTheme: ThemeData(
+                useMaterial3: true,
+                colorScheme: const ColorScheme(
+                  brightness: Brightness.dark,
+                  primary: Color(0xff00B200),
+                  onPrimary: Colors.white,
+                  secondary: Color(0xFF004B23),
+                  onSecondary: Colors.white,
+                  surface: Color(0xFF121212),
+                  onSurface: Colors.white,
+                  error: Colors.red,
+                  onError: Colors.white,
+                ),
+                scaffoldBackgroundColor: Color(0xFF121212),
+                snackBarTheme: SnackBarThemeData(
+                  backgroundColor: Color(0xFF0A8754),
+                  contentTextStyle: TextStyle(color: Colors.white),
+                ),
+              ),
+              themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+              home: const IntroPage(),
+            );
+          },
         ),
       ),
     );

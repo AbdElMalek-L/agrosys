@@ -137,6 +137,7 @@ class DevicesListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const AppDrawer(),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Theme.of(context).colorScheme.primary,
         child: Icon(Icons.add, color: Colors.white),
