@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 
-// TODO: remove this.
-
+/// A card widget that displays a list of device models within an
+/// expandable tile.
+///
+/// Allows the user to select a device model from the provided [models] list.
+/// The selected model is displayed in the tile header.
+/// Calls the [onModelSelected] callback when a model is chosen.
 class DeviceModelsCard extends StatefulWidget {
+  /// The list of device model names to display.
   final List<String> models;
+
+  /// Callback function invoked when a model is selected.
   final ValueChanged<String>? onModelSelected;
 
+  /// Creates a DeviceModelsCard.
   const DeviceModelsCard({
     super.key,
     required this.models,

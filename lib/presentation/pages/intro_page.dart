@@ -1,7 +1,7 @@
 import 'package:agrosys/domain/models/device.dart';
-import 'package:agrosys/presentation/pages/device_test_page.dart';
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
+import 'home_screen.dart';
 
 // TODO: add saving that the user seen the intro.
 
@@ -72,14 +72,7 @@ class IntroPage extends StatelessWidget {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) =>
-                                  // devices.isEmpty
-                                  //     ? AddDevicePage()
-                                  // :
-                                  DeviceTestPage(),
-                        ),
+                        MaterialPageRoute(builder: (context) => HomeScreen()),
                       );
                     },
 

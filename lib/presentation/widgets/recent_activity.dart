@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
-import '../../controllers/recent_activity_storage.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../cubits/recent_activity_cubit.dart'; // Import the Cubit
 
-// TODO: make this usefull. didnt use it yet
-// TODO: create cuibit for this
-
-class RecentActivityWidget extends StatefulWidget {
-  const RecentActivityWidget({super.key});
-
-  @override
-  _RecentActivityWidgetState createState() => _RecentActivityWidgetState();
-}
-
-class _RecentActivityWidgetState extends State<RecentActivityWidget> {
-  List<Map<String, String>> activities = [];
-
-  // Predefined icon constants
+/// A widget that displays a list of recent activities.
+///
+/// Uses a [BlocBuilder] to listen to changes in a [RecentActivityCubit]
+/// and display the activities accordingly.
+class RecentActivityWidget extends StatelessWidget {
+  /// Predefined icon constants for different activity types.
   static const Map<String, IconData> activityIcons = {
     'alert': Icons.warning,
     'success': Icons.check_circle,
@@ -24,7 +17,7 @@ class _RecentActivityWidgetState extends State<RecentActivityWidget> {
     'sensor': Icons.sensors,
   };
 
-  // Predefined color constants
+  /// Predefined color constants for different activity types.
   static const Map<String, Color> activityColors = {
     'alert': Colors.orange,
     'success': Colors.green,
@@ -33,53 +26,59 @@ class _RecentActivityWidgetState extends State<RecentActivityWidget> {
     'default': Colors.grey,
   };
 
-  @override
-  void initState() {
-    super.initState();
-    _loadActivities();
-  }
-
-  Future<void> _loadActivities() async {
-    final loadedActivities = await RecentActivityStorage.loadActivities();
-    setState(() {
-      activities = loadedActivities;
-    });
-  }
+  /// Creates a RecentActivityWidget.
+  const RecentActivityWidget({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            "النشاط الأخير",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 10),
-          if (activities.isEmpty)
+    return BlocProvider(
+      // Provide the Cubit
+      create: (context) => RecentActivityCubit()..loadActivities(),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
             const Text(
-              "لا يوجد نشاط حتى الآن",
-              style: TextStyle(color: Colors.grey),
+              "النشاط الأخير",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-          ...activities.map(
-            (activity) => ListTile(
-              leading: Icon(
-                activityIcons[activity['iconType']] ?? Icons.help_outline,
-                color:
-                    activityColors[activity['colorType']] ??
-                    activityColors['default']!,
-              ),
-              title: Text(activity['title']!),
-              subtitle: Text(activity['subtitle']!),
+            const SizedBox(height: 10),
+            // Use BlocBuilder to listen to the Cubit's state
+            BlocBuilder<RecentActivityCubit, List<Map<String, String>>>(
+              builder: (context, activities) {
+                if (activities.isEmpty) {
+                  return const Text(
+                    "لا يوجد نشاط حتى الآن",
+                    style: TextStyle(color: Colors.grey),
+                  );
+                }
+                return Column(
+                  children:
+                      activities
+                          .map(
+                            (activity) => ListTile(
+                              leading: Icon(
+                                activityIcons[activity['iconType']] ??
+                                    Icons.help_outline,
+                                color:
+                                    activityColors[activity['colorType']] ??
+                                    activityColors['default']!,
+                              ),
+                              title: Text(activity['title']!),
+                              subtitle: Text(activity['subtitle']!),
+                            ),
+                          )
+                          .toList(),
+                );
+              },
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

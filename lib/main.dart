@@ -83,7 +83,7 @@ class MyApp extends StatelessWidget {
           ),
 
           debugShowCheckedModeBanner: false,
-          home: const IntroPage(),
+          home: IntroPage(), // Use HomeScreen as the home
         ),
       ),
     );

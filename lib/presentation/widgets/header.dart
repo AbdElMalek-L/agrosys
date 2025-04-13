@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
 
-// TODO: Improve the style
-
+/// A simple widget to display a styled header text.
+///
+/// Uses the primary color from the current theme.
 class Header extends StatelessWidget {
-  const Header({super.key, required this.title});
-
+  /// The text content of the header.
   final String title;
+
+  /// Creates a Header widget.
+  const Header({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
+    // Use the primary color from the theme for consistency
+    final Color primaryColor = Theme.of(context).colorScheme.primary;
+
     return Text(
       title,
-      style: const TextStyle(
-        color: Color(0xff009200),
+      style: TextStyle(
+        color: primaryColor, // Use theme color
         fontSize: 24,
         fontWeight: FontWeight.bold,
       ),
