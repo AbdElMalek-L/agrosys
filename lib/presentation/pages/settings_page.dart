@@ -34,11 +34,7 @@ class _SettingsPageState extends State<SettingsPage> {
       text: _currentDevice.passWord,
     );
     _newPasswordController = TextEditingController();
-    _expandedCards = {
-      'name': false,
-      'phone': false,
-      'password': false,
-    };
+    _expandedCards = {'name': false, 'phone': false, 'password': false};
   }
 
   @override
@@ -158,103 +154,110 @@ class _SettingsPageState extends State<SettingsPage> {
           elevation: 0,
         ),
         body: SingleChildScrollView(
-        child: Padding(
-          padding: EdgeInsets.only(
-            left: 16.0,
-            right: 16.0,
-            top: 16.0,
-            bottom: MediaQuery.of(context).viewInsets.bottom + 16,
-          ),
-          child: Column(
-            children: [
-              _buildExpandableCard(
-                title: 'اسم الجهاز',
-                icon: Icons.person,
-                cardKey: 'name',
-                child: TextFormField(
-                  controller: _nameController,
-                  decoration: const InputDecoration(
-                    hintText: 'أدخل اسم الجهاز',
+          child: Padding(
+            padding: EdgeInsets.only(
+              left: 16.0,
+              right: 16.0,
+              top: 16.0,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+            ),
+            child: Column(
+              children: [
+                _buildExpandableCard(
+                  title: 'اسم الجهاز',
+                  icon: Icons.person,
+                  cardKey: 'name',
+                  child: TextFormField(
+                    controller: _nameController,
+                    decoration: const InputDecoration(
+                      hintText: 'أدخل اسم الجهاز',
+                    ),
                   ),
+                  onSave: _updateDeviceName,
                 ),
-                onSave: _updateDeviceName,
-              ),
-              const SizedBox(height: 16),
-              _buildExpandableCard(
-                title: 'رقم الهاتف',
-                icon: Icons.phone,
-                cardKey: 'phone',
-                child: TextFormField(
-                  controller: _phoneController,
-                  keyboardType: TextInputType.phone,
-                  decoration: const InputDecoration(
-                    hintText: 'أدخل رقم الهاتف',
+                const SizedBox(height: 16),
+                _buildExpandableCard(
+                  title: 'رقم الهاتف',
+                  icon: Icons.phone,
+                  cardKey: 'phone',
+                  child: TextFormField(
+                    controller: _phoneController,
+                    keyboardType: TextInputType.phone,
+                    decoration: const InputDecoration(
+                      hintText: 'أدخل رقم الهاتف',
+                    ),
                   ),
+                  onSave: _updatePhoneNumber,
                 ),
-                onSave: _updatePhoneNumber,
-              ),
-              const SizedBox(height: 16),
-              _buildExpandableCard(
-                title: 'تغيير كلمة المرور',
-                icon: Icons.lock,
-                cardKey: 'password',
-                child: Column(
-                  children: [
-                    TextFormField(
-                      controller: _oldPasswordController,
-                      obscureText: !_oldPasswordVisible,
-                      decoration: InputDecoration(
-                        labelText: 'كلمة المرور القديمة',
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _oldPasswordVisible
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                          ),
-                          onPressed: () => setState(
-                            () => _oldPasswordVisible = !_oldPasswordVisible,
+                const SizedBox(height: 16),
+                _buildExpandableCard(
+                  title: 'تغيير كلمة المرور',
+                  icon: Icons.lock,
+                  cardKey: 'password',
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        controller: _oldPasswordController,
+                        obscureText: !_oldPasswordVisible,
+                        decoration: InputDecoration(
+                          labelText: 'كلمة المرور القديمة',
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _oldPasswordVisible
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            onPressed:
+                                () => setState(
+                                  () =>
+                                      _oldPasswordVisible =
+                                          !_oldPasswordVisible,
+                                ),
                           ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: _newPasswordController,
-                      obscureText: !_newPasswordVisible,
-                      decoration: InputDecoration(
-                        labelText: 'كلمة المرور الجديدة',
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _newPasswordVisible
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                          ),
-                          onPressed: () => setState(
-                            () => _newPasswordVisible = !_newPasswordVisible,
+                      const SizedBox(height: 16),
+                      TextFormField(
+                        controller: _newPasswordController,
+                        obscureText: !_newPasswordVisible,
+                        decoration: InputDecoration(
+                          labelText: 'كلمة المرور الجديدة',
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _newPasswordVisible
+                                  ? Icons.visibility_off
+                                  : Icons.visibility,
+                            ),
+                            onPressed:
+                                () => setState(
+                                  () =>
+                                      _newPasswordVisible =
+                                          !_newPasswordVisible,
+                                ),
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
+                  onSave: _updatePassword,
                 ),
-                onSave: _updatePassword,
-              ),
-              const SizedBox(height: 32),
-              ElevatedButton(
-                onPressed: _confirmDelete,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(double.infinity, 50),
+                const SizedBox(height: 32),
+                ElevatedButton(
+                  onPressed: _confirmDelete,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.error,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(double.infinity, 50),
+                  ),
+                  child: const Text('حذف الجهاز'),
                 ),
-                child: const Text('حذف الجهاز'),
-              ),
-              const SizedBox(height: 16),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('إغلاق'),
-              ),
-            ],
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('إغلاق'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -281,9 +284,10 @@ class _SettingsPageState extends State<SettingsPage> {
               isExpanded ? Icons.expand_less : Icons.expand_more,
               color: Theme.of(context).colorScheme.primary,
             ),
-            onTap: () => setState(() {
-              _expandedCards[cardKey] = !isExpanded;
-            }),
+            onTap:
+                () => setState(() {
+                  _expandedCards[cardKey] = !isExpanded;
+                }),
           ),
           AnimatedCrossFade(
             firstChild: const SizedBox(height: 0),
@@ -312,9 +316,10 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
               ),
             ),
-            crossFadeState: isExpanded
-                ? CrossFadeState.showSecond
-                : CrossFadeState.showFirst,
+            crossFadeState:
+                isExpanded
+                    ? CrossFadeState.showSecond
+                    : CrossFadeState.showFirst,
             duration: const Duration(milliseconds: 200),
           ),
         ],

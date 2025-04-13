@@ -30,7 +30,7 @@ class DeviceView extends StatefulWidget {
 class _DeviceViewState extends State<DeviceView> {
   final bool _isExpanded = false;
   final int _expansionKey = 0;
-  final SMSController _smsController = SMSController();
+  // final SMSController _smsController = SMSController();
 
   final String controlAssetPowerOn = "assets/power_animation.json";
   final String controlAssetPowerOff = "assets/power_off.json";
@@ -215,7 +215,7 @@ class _DeviceViewState extends State<DeviceView> {
   }
 
   void sendSMS(String phoneNumber, String command) {
-    _smsController.sendCommandWithResponse(
+    /*  _smsController.sendCommandWithResponse(
       context: context,
       phoneNumber: phoneNumber,
       command: command,
@@ -247,6 +247,7 @@ class _DeviceViewState extends State<DeviceView> {
           developer.log("SMS command failed", name: 'DeviceView');
         }
       },
-    );
+    ) */
+    ;
   }
 }

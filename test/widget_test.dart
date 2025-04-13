@@ -11,6 +11,7 @@ import 'package:agrosys/domain/repository/app_state_repo.dart';
 import 'package:agrosys/domain/repository/device_repo.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
 import 'package:agrosys/presentation/cubits/device_cubit.dart';
+import 'package:agrosys/presentation/cubits/theme_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -38,6 +39,9 @@ void main() {
         appStateRepo: appStateRepo,
         deviceCubit: deviceCubit,
         appStateCubit: appStateCubit,
+        themeCubit: ThemeCubit(
+          appStateCubit as SharedPreferences,
+        ), // Pass the required appStateCubit argument
       ),
     );
 

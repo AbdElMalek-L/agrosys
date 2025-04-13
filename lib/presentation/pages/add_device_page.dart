@@ -5,7 +5,6 @@ import 'package:lottie/lottie.dart';
 import '../widgets/device_models_card.dart';
 import '../widgets/header.dart';
 import '../widgets/app_drawer.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
 
 // TODO: fix the cubit dont refreshing when new device added
 // TODO: add the new device as default selected in dashboard screen when saving.
@@ -114,8 +113,16 @@ class _AddDevicePageState extends State<AddDevicePage> {
                 },
               ),
             ),
-            _buildInputField('اسم الجهاز', _deviceNameController, Icons.device_hub),
-            _buildInputField('رقم الخاص بجهاز', _deviceNumberController, Icons.phone),
+            _buildInputField(
+              'اسم الجهاز',
+              _deviceNameController,
+              Icons.device_hub,
+            ),
+            _buildInputField(
+              'رقم الخاص بجهاز',
+              _deviceNumberController,
+              Icons.phone,
+            ),
             _buildInputField('الرقم السري', _passwordController, Icons.lock),
           ],
         ),
@@ -123,89 +130,102 @@ class _AddDevicePageState extends State<AddDevicePage> {
     );
   }
 
-  Widget _buildInputField(String label, TextEditingController controller, IconData icon) {
+  Widget _buildInputField(
+    String label,
+    TextEditingController controller,
+    IconData icon,
+  ) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-      child: label == 'رقم الخاص بجهاز' 
-          ? TextFormField(
-              controller: controller,
-              textAlign: TextAlign.right,
-              textDirection: TextDirection.rtl,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                labelText: label,
-                labelStyle: TextStyle(color: Colors.grey[600]),
-                floatingLabelBehavior: FloatingLabelBehavior.auto,
-                prefixIcon: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(icon, color: Theme.of(context).colorScheme.primary),
-                    const SizedBox(width: 8),
-                    Text(
-                      '+212',
-                      style: TextStyle(color: Theme.of(context).colorScheme.primary),
-                    ),
-                  ],
-                ),
-                enabledBorder: const OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.transparent),
-                  borderRadius: BorderRadius.all(Radius.circular(8)),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: Theme.of(context).colorScheme.primary,
-                    width: 2.0,
+      child:
+          label == 'رقم الخاص بجهاز'
+              ? TextFormField(
+                controller: controller,
+                textAlign: TextAlign.right,
+                textDirection: TextDirection.rtl,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
                   ),
-                  borderRadius: const BorderRadius.all(Radius.circular(8)),
+                  labelText: label,
+                  labelStyle: TextStyle(color: Colors.grey[600]),
+                  floatingLabelBehavior: FloatingLabelBehavior.auto,
+                  prefixIcon: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(icon, color: Theme.of(context).colorScheme.primary),
+                      const SizedBox(width: 8),
+                      Text(
+                        '+212',
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.transparent),
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                      width: 2.0,
+                    ),
+                    borderRadius: const BorderRadius.all(Radius.circular(8)),
+                  ),
                 ),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'الرجاء إدخال قيمة';
-                }
-                // Remove any non-digit characters
-                final cleanNumber = value.replaceAll(RegExp(r'\D'), '');
-                if (cleanNumber.length < 9) {
-                  return 'رقم الهاتف غير صالح';
-                }
-                return null;
-              },
-            )
-        : TextFormField(
-            controller: controller,
-            textAlign: TextAlign.right,
-            textDirection: TextDirection.rtl,
-            decoration: InputDecoration(
-              filled: true,
-              fillColor: Colors.white,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 12,
-              ),
-              labelText: label,
-              labelStyle: TextStyle(color: Colors.grey[600]),
-              floatingLabelBehavior: FloatingLabelBehavior.auto,
-              prefixIcon: Icon(icon, color: Theme.of(context).colorScheme.primary),
-              enabledBorder: const OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.transparent),
-                borderRadius: BorderRadius.all(Radius.circular(8)),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(
-                  color: Theme.of(context).colorScheme.primary,
-                  width: 2.0,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'الرجاء إدخال قيمة';
+                  }
+                  // Remove any non-digit characters
+                  final cleanNumber = value.replaceAll(RegExp(r'\D'), '');
+                  if (cleanNumber.length < 9) {
+                    return 'رقم الهاتف غير صالح';
+                  }
+                  return null;
+                },
+              )
+              : TextFormField(
+                controller: controller,
+                textAlign: TextAlign.right,
+                textDirection: TextDirection.rtl,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  labelText: label,
+                  labelStyle: TextStyle(color: Colors.grey[600]),
+                  floatingLabelBehavior: FloatingLabelBehavior.auto,
+                  prefixIcon: Icon(
+                    icon,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  enabledBorder: const OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.transparent),
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Theme.of(context).colorScheme.primary,
+                      width: 2.0,
+                    ),
+                    borderRadius: const BorderRadius.all(Radius.circular(8)),
+                  ),
                 ),
-                borderRadius: const BorderRadius.all(Radius.circular(8)),
+                validator:
+                    (value) =>
+                        value == null || value.isEmpty
+                            ? 'الرجاء إدخال قيمة'
+                            : null,
               ),
-            ),
-            validator: (value) =>
-                value == null || value.isEmpty ? 'الرجاء إدخال قيمة' : null,
-          ),
     );
   }
 

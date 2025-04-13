@@ -1,4 +1,4 @@
-import 'dart:async';
+/* import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_messenger/flutter_background_messenger.dart';
 import 'package:telephony/telephony.dart';
@@ -14,7 +14,7 @@ class SMSController {
 
   /// Get all sent SMS messages
   List<SentSMS> getAllSentSMS() {
-    return _smsTracker.getAllSentSMS();
+    return _smsTracker.getAllSentSMS();/*  */
   }
 
   /// Get sent SMS messages for a specific phone number
@@ -125,3 +125,4 @@ class SMSController {
     );
   }
 }
+ */

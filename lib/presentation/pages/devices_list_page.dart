@@ -4,6 +4,7 @@ import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
 import 'package:agrosys/presentation/cubits/device_cubit.dart';
 import 'package:agrosys/presentation/pages/add_device_page.dart';
 import 'package:agrosys/presentation/pages/settings_page.dart';
+import 'package:agrosys/presentation/widgets/app_drawer.dart';
 import 'package:agrosys/presentation/widgets/header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
