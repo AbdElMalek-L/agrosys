@@ -85,7 +85,9 @@ class DeviceCubit extends Cubit<List<Device>> {
         name: newDevice.name,
         phoneNumber: newDevice.phoneNumber,
         passWord: newDevice.passWord,
-        // include other properties as needed
+        isScheduleEnabled: newDevice.isScheduleEnabled,
+        scheduleStartTime: newDevice.scheduleStartTime,
+        scheduleEndTime: newDevice.scheduleEndTime,
       );
 
       newState[index] = updatedDevice;
