@@ -8,8 +8,9 @@ import 'package:agrosys/presentation/cubits/device_cubit.dart';
 import '../widgets/app_drawer.dart';
 import '../widgets/device_selector_tile.dart';
 import '../widgets/header.dart';
-import '../widgets/power_control_button.dart'; // Import the new widget
+import '../widgets/power_control_button.dart';
 import '../widgets/recent_activity.dart';
+import '../widgets/schedule_card.dart'; // Import the new widget
 
 /// Displays the main control view for the selected device.
 ///
@@ -101,9 +102,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                 minimumSize: const Size(double.infinity, 50),
                               ),
                             ),
+                            const SizedBox(height: 20),
+                            BlocBuilder<AppStateCubit, AppState>(
+                              builder: (context, appState) {
+                                return BlocBuilder<DeviceCubit, List<Device>>(
+                                  builder: (context, devices) {
+                                    if (devices.isNotEmpty) {
+                                      return ScheduleCard(
+                                        device:
+                                            devices[appState
+                                                .selectedDeviceIndex],
+                                      );
+                                    } else {
+                                      return const SizedBox.shrink();
+                                    }
+                                  },
+                                );
+                              },
+                            ),
                           ],
                           const SizedBox(height: 30),
-
                           const RecentActivityWidget(),
                         ],
                       ),

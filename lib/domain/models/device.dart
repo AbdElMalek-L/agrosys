@@ -22,6 +22,8 @@ Methodes:
 
 */
 
+import 'package:flutter/material.dart';
+
 class Device {
   final int id;
   final String model;
