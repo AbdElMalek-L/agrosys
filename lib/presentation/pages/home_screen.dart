@@ -1,5 +1,6 @@
 import 'package:agrosys/domain/models/app_state.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
+import 'package:agrosys/presentation/pages/schedule_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:agrosys/domain/models/device.dart';
@@ -70,9 +71,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           const SizedBox(height: 20),
 
                           const SizedBox(height: 20),
-                          // Use the extracted PowerControlButton widget
-                          // Only show if there are devices available
-                          if (devices.isNotEmpty)
+                          if (devices.isNotEmpty) ...[
                             PowerControlButton(
                               // Pass the currently selected device
                               device: devices[appState.selectedDeviceIndex],
@@ -80,6 +79,29 @@ class _HomeScreenState extends State<HomeScreen> {
                               // Pass the sendSMS method as the callback
                               onTogglePower: sendSMS,
                             ),
+                            const SizedBox(height: 20),
+                            // Schedule button
+                            ElevatedButton.icon(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => SchedulePage(
+                                          device:
+                                              devices[appState
+                                                  .selectedDeviceIndex],
+                                        ),
+                                  ),
+                                );
+                              },
+                              icon: const Icon(Icons.schedule),
+                              label: const Text('جدول الطاقة'),
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(double.infinity, 50),
+                              ),
+                            ),
+                          ],
                           const SizedBox(height: 30),
 
                           const RecentActivityWidget(),

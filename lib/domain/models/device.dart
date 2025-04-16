@@ -30,6 +30,9 @@ class Device {
   final String passWord;
   final bool isPoweredOn;
   final int signal;
+  final bool isScheduleEnabled;
+  final TimeOfDay? scheduleStartTime;
+  final TimeOfDay? scheduleEndTime;
 
   Device({
     required this.id,
@@ -39,6 +42,9 @@ class Device {
     required this.passWord,
     this.isPoweredOn = false,
     this.signal = 0,
+    this.isScheduleEnabled = false,
+    this.scheduleStartTime,
+    this.scheduleEndTime,
   });
 
   Device togglePower() {
@@ -50,6 +56,9 @@ class Device {
       passWord: passWord,
       isPoweredOn: !isPoweredOn,
       signal: signal,
+      isScheduleEnabled: isScheduleEnabled,
+      scheduleStartTime: scheduleStartTime,
+      scheduleEndTime: scheduleEndTime,
     );
   }
 
@@ -62,6 +71,9 @@ class Device {
       passWord: passWord,
       isPoweredOn: isPoweredOn,
       signal: signal,
+      isScheduleEnabled: isScheduleEnabled,
+      scheduleStartTime: scheduleStartTime,
+      scheduleEndTime: scheduleEndTime,
     );
   }
 
@@ -78,6 +90,9 @@ class Device {
   }
 
   Device copyWith({
+    bool? isScheduleEnabled,
+    TimeOfDay? scheduleStartTime,
+    TimeOfDay? scheduleEndTime,
     int? id,
     String? name,
     String? model,
@@ -90,6 +105,9 @@ class Device {
       model: model ?? this.model,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       passWord: passWord ?? this.passWord,
+      isScheduleEnabled: isScheduleEnabled ?? this.isScheduleEnabled,
+      scheduleStartTime: scheduleStartTime ?? this.scheduleStartTime,
+      scheduleEndTime: scheduleEndTime ?? this.scheduleEndTime,
     );
   }
 }
