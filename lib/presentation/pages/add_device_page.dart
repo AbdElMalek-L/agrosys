@@ -2,7 +2,7 @@ import 'package:agrosys/presentation/cubits/device_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
-import 'package:intl_phone_field/intl_phone_field.dart';
+import 'package:intl_phone_field/intl_phone_field.dart'; // Ensure this is imported
 import '../widgets/device_models_card.dart';
 import '../widgets/header.dart';
 
@@ -121,7 +121,7 @@ class _AddDevicePageState extends State<AddDevicePage> {
               'رقم الخاص بجهاز',
               _deviceNumberController,
               icon: Icons.phone_android,
-              isPhone: true,
+              isPhone: true, // Use IntlPhoneField for this one
             ),
             _buildInputField(
               'الرقم السري',
@@ -141,23 +141,23 @@ class _AddDevicePageState extends State<AddDevicePage> {
     bool isPhone = false,
   }) {
     if (isPhone) {
+      // Use IntlPhoneField for phone number input
       return Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
         child: IntlPhoneField(
-          controller: controller,
-          textAlign: TextAlign.right,
+          controller: controller, // Provide the controller
           decoration: InputDecoration(
+            labelText: label,
+            labelStyle: TextStyle(
+              color: Theme.of(context).textTheme.bodyLarge?.color,
+            ),
+            prefixIcon: icon != null ? Icon(icon) : null,
             filled: true,
             fillColor: Theme.of(context).colorScheme.surface,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 12,
             ),
-            labelText: label,
-            labelStyle: TextStyle(
-              color: Theme.of(context).textTheme.bodyLarge?.color,
-            ),
-            prefixIcon: icon != null ? Icon(icon) : null,
             floatingLabelBehavior: FloatingLabelBehavior.auto,
             enabledBorder: const OutlineInputBorder(
               borderSide: BorderSide(color: Colors.transparent),
@@ -171,58 +171,71 @@ class _AddDevicePageState extends State<AddDevicePage> {
               borderRadius: const BorderRadius.all(Radius.circular(8)),
             ),
           ),
-          initialCountryCode: 'MA',
+          initialCountryCode: 'MA', // Default country code
+          languageCode: 'ar', // Set language if needed for country names
+          disableLengthCheck: true, // Disable internal length check
+          // keyboardType: TextInputType.phone, // Remove explicit keyboard type
           onChanged: (phone) {
+            // Reinstate onChanged to update controller
             controller.text = phone.completeNumber;
+          },
+          validator: (phone) {
+            // Validate using the phone object
+            if (phone == null || phone.number.isEmpty) {
+              return 'الرجاء إدخال رقم هاتف صحيح'; // Please enter a valid phone number
+            }
+            return null;
           },
         ),
       );
-    }
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-      child: TextFormField(
-        controller: controller,
-        textAlign: TextAlign.right,
-        textDirection: TextDirection.rtl,
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: Theme.of(context).colorScheme.surface,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
-          ),
-          labelText: label,
-          prefixIcon: icon != null ? Icon(icon) : null,
-          labelStyle: TextStyle(
-            color: Theme.of(context).textTheme.bodyLarge?.color,
-          ),
-          floatingLabelBehavior: FloatingLabelBehavior.auto,
-          enabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.transparent),
-            borderRadius: BorderRadius.all(Radius.circular(8)),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.primary,
-              width: 2.0,
+    } else {
+      // Use standard TextFormField for other inputs
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+        child: TextFormField(
+          controller: controller,
+          textAlign: TextAlign.right,
+          textDirection: TextDirection.rtl,
+          decoration: InputDecoration(
+            labelText: label,
+            labelStyle: TextStyle(
+              color: Theme.of(context).textTheme.bodyLarge?.color,
             ),
-            borderRadius: const BorderRadius.all(Radius.circular(8)),
+            prefixIcon: icon != null ? Icon(icon) : null,
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surface,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
+            floatingLabelBehavior: FloatingLabelBehavior.auto,
+            enabledBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.transparent),
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(
+                color: Theme.of(context).colorScheme.primary,
+                width: 2.0,
+              ),
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+            ),
           ),
+          validator:
+              (value) =>
+                  value == null || value.isEmpty ? 'الرجاء إدخال قيمة' : null,
         ),
-        validator:
-            (value) =>
-                value == null || value.isEmpty ? 'الرجاء إدخال قيمة' : null,
-      ),
-    );
+      );
+    }
   }
 
   void _addDevice(BuildContext context) {
     if (_formKey.currentState!.validate()) {
+      // Ensure the controller text is used when adding the device
       context.read<DeviceCubit>().addDevice(
         _selectedModel ?? 'Unknown',
         _deviceNameController.text,
-        _deviceNumberController.text,
+        _deviceNumberController.text, // Use the controller's text
         _passwordController.text,
       );
       Navigator.pop(context);

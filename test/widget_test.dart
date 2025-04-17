@@ -14,7 +14,9 @@ import 'package:agrosys/presentation/cubits/device_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:agrosys/controllers/schedule_service.dart';
+import 'package:agrosys/controllers/notification_service.dart';
+import 'package:agrosys/controllers/sms_controller.dart'; // Import SMSController
 import 'package:agrosys/main.dart';
 
 void main() {
@@ -31,6 +33,14 @@ void main() {
     final DeviceCubit deviceCubit = DeviceCubit(deviceRepo);
     final AppStateCubit appStateCubit = AppStateCubit(appStateRepo);
 
+    // Create service instances
+    final SMSController smsController = SMSController();
+    final ScheduleService scheduleService = ScheduleService(
+      deviceCubit,
+      smsController,
+    );
+    final NotificationService notificationService = NotificationService();
+
     // Build our app and trigger a frame.
     await tester.pumpWidget(
       MyApp(
@@ -38,6 +48,8 @@ void main() {
         appStateRepo: appStateRepo,
         deviceCubit: deviceCubit,
         appStateCubit: appStateCubit,
+        scheduleService: scheduleService,
+        notificationService: notificationService,
       ),
     );
 
