@@ -7,10 +7,12 @@
 
 import 'package:agrosys/domain/models/device.dart';
 import 'package:agrosys/domain/repository/device_repo.dart';
+import 'package:agrosys/controllers/notification_service.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DeviceCubit extends Cubit<List<Device>> {
   final DeviceRepo deviceRepo;
+  final NotificationService _notificationService = NotificationService();
 
   DeviceCubit(this.deviceRepo) : super([]) {
     loadDevices();
@@ -40,6 +42,9 @@ class DeviceCubit extends Cubit<List<Device>> {
   }
 
   Future<void> deleteDevice(Device device) async {
+    // Cancel existing notifications for this device
+    await _notificationService.cancelDeviceNotifications(device.id);
+
     await deviceRepo.deleteDevice(device);
     loadDevices();
   }
@@ -95,6 +100,52 @@ class DeviceCubit extends Cubit<List<Device>> {
 
       // Then update in repository
       await deviceRepo.updateDevice(updatedDevice);
+
+      // Update schedule notifications
+      await _updateScheduleNotifications(updatedDevice);
     }
+  }
+
+  // Method to update schedule notifications for a device
+  Future<void> _updateScheduleNotifications(Device device) async {
+    // First cancel existing notifications
+    await _notificationService.cancelDeviceNotifications(device.id);
+
+    // If schedule is not enabled or times are not set, no need to schedule notifications
+    if (!device.isScheduleEnabled ||
+        device.scheduleStartTime == null ||
+        device.scheduleEndTime == null) {
+      return;
+    }
+
+    // Schedule start time notification
+    await _notificationService.scheduleNotification(
+      device: device,
+      scheduledTime: device.scheduleStartTime!,
+      isStartEvent: true,
+    );
+
+    // Schedule preview notification 5 minutes before start time
+    await _notificationService.scheduleNotification(
+      device: device,
+      scheduledTime: device.scheduleStartTime!,
+      isStartEvent: true,
+      showPreview: true,
+    );
+
+    // Schedule end time notification
+    await _notificationService.scheduleNotification(
+      device: device,
+      scheduledTime: device.scheduleEndTime!,
+      isStartEvent: false,
+    );
+
+    // Schedule preview notification 5 minutes before end time
+    await _notificationService.scheduleNotification(
+      device: device,
+      scheduledTime: device.scheduleEndTime!,
+      isStartEvent: false,
+      showPreview: true,
+    );
   }
 }

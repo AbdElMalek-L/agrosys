@@ -100,6 +100,7 @@ class Device {
     String? model,
     String? phoneNumber,
     String? passWord,
+    bool? isPoweredOn,
   }) {
     return Device(
       id: id ?? this.id,
@@ -107,6 +108,7 @@ class Device {
       model: model ?? this.model,
       phoneNumber: phoneNumber ?? this.phoneNumber,
       passWord: passWord ?? this.passWord,
+      isPoweredOn: isPoweredOn ?? this.isPoweredOn,
       isScheduleEnabled: isScheduleEnabled ?? this.isScheduleEnabled,
       scheduleStartTime: scheduleStartTime ?? this.scheduleStartTime,
       scheduleEndTime: scheduleEndTime ?? this.scheduleEndTime,

@@ -9,6 +9,7 @@
  */
 
 import 'package:agrosys/domain/models/device.dart';
+import 'package:flutter/material.dart';
 
 class DeviceStorage {
   late int id;
@@ -18,6 +19,11 @@ class DeviceStorage {
   late String passWord;
   late bool isPoweredOn;
   late int signal;
+  late bool isScheduleEnabled;
+  int? scheduleStartHour;
+  int? scheduleStartMinute;
+  int? scheduleEndHour;
+  int? scheduleEndMinute;
 
   //convert storage oobject -> pure device object to use in our app
   Device toDevice() {
@@ -29,6 +35,13 @@ class DeviceStorage {
       passWord: passWord,
       isPoweredOn: isPoweredOn,
       signal: signal,
+      isScheduleEnabled: isScheduleEnabled,
+      scheduleStartTime: scheduleStartHour != null && scheduleStartMinute != null
+          ? TimeOfDay(hour: scheduleStartHour!, minute: scheduleStartMinute!)
+          : null,
+      scheduleEndTime: scheduleEndHour != null && scheduleEndMinute != null
+          ? TimeOfDay(hour: scheduleEndHour!, minute: scheduleEndMinute!)
+          : null,
     );
   }
 
@@ -41,7 +54,12 @@ class DeviceStorage {
       ..phoneNumber = device.phoneNumber
       ..passWord = device.passWord
       ..isPoweredOn = device.isPoweredOn
-      ..signal = device.signal;
+      ..signal = device.signal
+      ..isScheduleEnabled = device.isScheduleEnabled
+      ..scheduleStartHour = device.scheduleStartTime?.hour
+      ..scheduleStartMinute = device.scheduleStartTime?.minute
+      ..scheduleEndHour = device.scheduleEndTime?.hour
+      ..scheduleEndMinute = device.scheduleEndTime?.minute;
   }
 
   // Convert JSON -> DeviceStorage
@@ -53,7 +71,12 @@ class DeviceStorage {
       ..phoneNumber = json['phoneNumber']
       ..passWord = json['passWord']
       ..isPoweredOn = json['isPoweredOn']
-      ..signal = json['signal'];
+      ..signal = json['signal']
+      ..isScheduleEnabled = json['isScheduleEnabled'] ?? false
+      ..scheduleStartHour = json['scheduleStartHour']
+      ..scheduleStartMinute = json['scheduleStartMinute']
+      ..scheduleEndHour = json['scheduleEndHour']
+      ..scheduleEndMinute = json['scheduleEndMinute'];
   }
 
   // Convert DeviceStorage -> JSON
@@ -66,6 +89,11 @@ class DeviceStorage {
       'passWord': passWord,
       'isPoweredOn': isPoweredOn,
       'signal': signal,
+      'isScheduleEnabled': isScheduleEnabled,
+      'scheduleStartHour': scheduleStartHour,
+      'scheduleStartMinute': scheduleStartMinute,
+      'scheduleEndHour': scheduleEndHour,
+      'scheduleEndMinute': scheduleEndMinute,
     };
   }
 }

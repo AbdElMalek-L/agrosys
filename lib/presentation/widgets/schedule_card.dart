@@ -13,24 +13,24 @@ class ScheduleCard extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text('Schedule', style: Theme.of(context).textTheme.titleLarge),
+            Text('الجدول', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 8),
             if (device.isScheduleEnabled)
               Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    'Start Time: ${device.scheduleStartTime != null ? DateFormat('hh:mm a').format(DateTime(2023, 1, 1, device.scheduleStartTime!.hour, device.scheduleStartTime!.minute)) : 'Not set'}',
+                    'وقت البدء: ${device.scheduleStartTime != null ? DateFormat('hh:mm', 'en').format(DateTime(2023, 1, 1, device.scheduleStartTime!.hour, device.scheduleStartTime!.minute)) + (device.scheduleStartTime!.hour < 12 ? ' صباحاً' : ' مساءً') : 'غير محدد'}',
                   ),
                   Text(
-                    'End Time: ${device.scheduleEndTime != null ? DateFormat('hh:mm a').format(DateTime(2023, 1, 1, device.scheduleEndTime!.hour, device.scheduleEndTime!.minute)) : 'Not set'}',
+                    'وقت الانتهاء: ${device.scheduleEndTime != null ? DateFormat('hh:mm', 'en').format(DateTime(2023, 1, 1, device.scheduleEndTime!.hour, device.scheduleEndTime!.minute)) + (device.scheduleEndTime!.hour < 12 ? ' صباحاً' : ' مساءً') : 'غير محدد'}',
                   ),
                 ],
               )
             else
-              const Text('No schedule set.'),
+              const Text('لم يتم تعيين جدول.'),
           ],
         ),
       ),

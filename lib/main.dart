@@ -11,9 +11,24 @@ import 'package:agrosys/domain/repository/device_repo.dart';
 import 'package:agrosys/presentation/pages/intro_page.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
 import 'package:agrosys/presentation/themes/app_theme.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:agrosys/controllers/schedule_service.dart';
+import 'package:agrosys/controllers/sms_controller.dart';
+import 'package:agrosys/controllers/background_service.dart';
+import 'package:agrosys/controllers/notification_service.dart';
+import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 
 void main() async {
+  // Initialize Arabic locale data
+  await initializeDateFormatting('ar');
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize background service for running in background
+  await BackgroundServiceManager.initialize();
+
+  // Initialize notification service
+  final notificationService = NotificationService();
+  await notificationService.initialize();
 
   // Initialize SharedPreferences
   final prefs = await SharedPreferences.getInstance();
@@ -26,6 +41,19 @@ void main() async {
   final DeviceCubit deviceCubit = DeviceCubit(deviceRepo);
   final AppStateCubit appStateCubit = AppStateCubit(appStateRepo);
 
+  // Create SMS controller and schedule service
+  final SMSController smsController = SMSController();
+  final ScheduleService scheduleService = ScheduleService(
+    deviceCubit,
+    smsController,
+  );
+
+  // Start schedule monitoring (in-app)
+  scheduleService.startScheduleMonitoring();
+
+  // Schedule notifications for all devices
+  await scheduleService.scheduleAllNotifications();
+
   // Run the app with providers
   runApp(
     MyApp(
@@ -33,6 +61,8 @@ void main() async {
       appStateRepo: appStateRepo,
       deviceCubit: deviceCubit,
       appStateCubit: appStateCubit,
+      scheduleService: scheduleService,
+      notificationService: notificationService,
     ),
   );
 }
@@ -42,37 +72,51 @@ class MyApp extends StatelessWidget {
   final AppStateRepo appStateRepo;
   final DeviceCubit deviceCubit;
   final AppStateCubit appStateCubit;
+  final ScheduleService scheduleService;
+  final NotificationService notificationService;
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
-  const MyApp({
+  MyApp({
     super.key,
     required this.deviceRepo,
     required this.appStateRepo,
     required this.deviceCubit,
     required this.appStateCubit,
+    required this.scheduleService,
+    required this.notificationService,
   });
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        Provider<DeviceRepo>.value(value: deviceRepo),
-        Provider<AppStateRepo>.value(value: appStateRepo),
-      ],
-      child: MultiBlocProvider(
+    return WithForegroundTask(
+      child: MultiProvider(
         providers: [
-          BlocProvider<AppStateCubit>.value(value: appStateCubit),
-          BlocProvider<DeviceCubit>.value(value: deviceCubit),
+          Provider<DeviceRepo>.value(value: deviceRepo),
+          Provider<AppStateRepo>.value(value: appStateRepo),
+          Provider<ScheduleService>.value(value: scheduleService),
+          Provider<NotificationService>.value(value: notificationService),
         ],
-        child: BlocBuilder<AppStateCubit, AppState>(
-          builder: (context, appState) {
-            return MaterialApp(
-              theme: AppTheme.lightTheme,
-              darkTheme: AppTheme.darkTheme,
-              themeMode: appState.darkMode ? ThemeMode.dark : ThemeMode.light,
-              debugShowCheckedModeBanner: false,
-              home: const IntroPage(),
-            );
-          },
+        child: MultiBlocProvider(
+          providers: [
+            BlocProvider<AppStateCubit>.value(value: appStateCubit),
+            BlocProvider<DeviceCubit>.value(value: deviceCubit),
+          ],
+          child: BlocBuilder<AppStateCubit, AppState>(
+            builder: (context, appState) {
+              return Directionality(
+                textDirection: TextDirection.rtl,
+                child: MaterialApp(
+                  navigatorKey: _navigatorKey,
+                  theme: AppTheme.lightTheme,
+                  darkTheme: AppTheme.darkTheme,
+                  themeMode:
+                      appState.darkMode ? ThemeMode.dark : ThemeMode.light,
+                  debugShowCheckedModeBanner: false,
+                  home: const IntroPage(),
+                ),
+              );
+            },
+          ),
         ),
       ),
     );

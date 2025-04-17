@@ -1,6 +1,8 @@
+import 'package:agrosys/controllers/sent_sms.dart';
 import 'package:agrosys/domain/models/app_state.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
 import 'package:agrosys/presentation/pages/schedule_page.dart';
+import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:agrosys/domain/models/device.dart';
@@ -11,6 +13,8 @@ import '../widgets/header.dart';
 import '../widgets/power_control_button.dart';
 import '../widgets/recent_activity.dart';
 import '../widgets/schedule_card.dart'; // Import the new widget
+import '../../controllers/sms_controller.dart';
+import 'package:telephony/telephony.dart';
 
 /// Displays the main control view for the selected device.
 ///
@@ -43,6 +47,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    planifierSms();
     return Scaffold(
       drawer: const AppDrawer(),
       body: BlocBuilder<AppStateCubit, AppState>(
@@ -99,6 +104,11 @@ class _HomeScreenState extends State<HomeScreen> {
                               icon: const Icon(Icons.schedule),
                               label: const Text('جدول الطاقة'),
                               style: ElevatedButton.styleFrom(
+                                elevation: 0,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+
                                 minimumSize: const Size(double.infinity, 50),
                               ),
                             ),
@@ -136,39 +146,58 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void sendSMS(String phoneNumber, String command) {
-    // _smsController.sendCommandWithResponse(
-    //   context: context,
-    //   phoneNumber: phoneNumber,
-    //   command: command,
-    //   onMessage: (message) {
-    //     // Log the message instead of showing a snackbar
-    //     developer.log(message, name: 'SMSController');
-    //   },
-    //   onResult: (success, response) {
-    //     if (success) {
-    //       // SMS sent and response received successfully
-    //       developer.log(
-    //         "SMS command successful: $response",
-    //         name: 'DeviceView',
-    //       );
+  final SMSController _smsController =
+      SMSController(); // Need to import SMSController class
 
-    //       // You can access the SMS history if needed
-    //       final sentMessages = _smsController.getSentSMSForPhoneNumber(
-    //         phoneNumber,
-    //       );
-    //       if (sentMessages.isNotEmpty) {
-    //         final lastMessage = sentMessages.last;
-    //         developer.log(
-    //           "Last SMS to $phoneNumber: ${lastMessage.message}, Response: ${lastMessage.response}",
-    //           name: 'DeviceView',
-    //         );
-    //       }
-    //     } else {
-    //       // SMS failed to send or no response received
-    //       developer.log("SMS command failed", name: 'DeviceView');
-    //     }
-    //   },
-    // );
+  void sendSMS(String phoneNumber, String command) {
+    _smsController.sendCommandWithResponse(
+      context: context,
+      phoneNumber: phoneNumber,
+      command: command,
+      onMessage: (message) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      },
+      onResult: (success, response) {
+        if (success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('تم إرسال الأمر بنجاح'),
+              backgroundColor: Colors.green,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: const Text('فشل إرسال الأمر'),
+              backgroundColor: Colors.red,
+              duration: const Duration(seconds: 2),
+            ),
+          );
+        }
+      },
+    );
+  }
+
+  void planifierSms() async {
+    final now = DateTime.now();
+    final dateCible = DateTime(now.year, now.month, now.day, 15, 40); // 15h30
+
+    final int delayInSeconds = dateCible.difference(now).inSeconds;
+
+    if (delayInSeconds > 0) {
+      await AndroidAlarmManager.oneShot(
+        Duration(seconds: delayInSeconds),
+        12345, // ID unique
+        sendSMS,
+        exact: true,
+        wakeup: true,
+      );
+    }
   }
 }
