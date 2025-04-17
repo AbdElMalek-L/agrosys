@@ -14,7 +14,6 @@ import '../widgets/power_control_button.dart';
 import '../widgets/recent_activity.dart';
 import '../widgets/schedule_card.dart'; // Import the new widget
 import '../../controllers/sms_controller.dart';
-import 'package:telephony/telephony.dart';
 
 /// Displays the main control view for the selected device.
 ///

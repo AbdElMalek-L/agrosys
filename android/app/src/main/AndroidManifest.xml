@@ -14,16 +14,7 @@
         android:label="agrosys"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
-        <receiver
-  android:name="dev.fluttercommunity.plus.androidalarmmanager.AlarmBroadcastReceiver"
-  android:exported="true"/>
-<receiver
-  android:name="dev.fluttercommunity.plus.androidalarmmanager.AlarmService"
-  android:exported="true" />
-<service
-  android:name="dev.fluttercommunity.plus.androidalarmmanager.AlarmService"
-  android:permission="android.permission.BIND_JOB_SERVICE"
-  android:exported="true"/>
+
 
         <activity
             android:name=".MainActivity"
