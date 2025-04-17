@@ -93,6 +93,7 @@ class DeviceCubit extends Cubit<List<Device>> {
         isScheduleEnabled: newDevice.isScheduleEnabled,
         scheduleStartTime: newDevice.scheduleStartTime,
         scheduleEndTime: newDevice.scheduleEndTime,
+        scheduleDays: newDevice.scheduleDays,
       );
 
       newState[index] = updatedDevice;

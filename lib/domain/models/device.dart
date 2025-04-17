@@ -35,6 +35,7 @@ class Device {
   final bool isScheduleEnabled;
   final TimeOfDay? scheduleStartTime;
   final TimeOfDay? scheduleEndTime;
+  final List<bool> scheduleDays;
 
   Device({
     required this.id,
@@ -47,7 +48,8 @@ class Device {
     this.isScheduleEnabled = false,
     this.scheduleStartTime,
     this.scheduleEndTime,
-  });
+    List<bool>? scheduleDays,
+  }) : scheduleDays = scheduleDays ?? List.filled(7, true);
 
   Device togglePower() {
     return Device(
@@ -61,6 +63,7 @@ class Device {
       isScheduleEnabled: isScheduleEnabled,
       scheduleStartTime: scheduleStartTime,
       scheduleEndTime: scheduleEndTime,
+      scheduleDays: scheduleDays,
     );
   }
 
@@ -76,6 +79,7 @@ class Device {
       isScheduleEnabled: isScheduleEnabled,
       scheduleStartTime: scheduleStartTime,
       scheduleEndTime: scheduleEndTime,
+      scheduleDays: scheduleDays,
     );
   }
 
@@ -95,6 +99,7 @@ class Device {
     bool? isScheduleEnabled,
     TimeOfDay? scheduleStartTime,
     TimeOfDay? scheduleEndTime,
+    List<bool>? scheduleDays,
     int? id,
     String? name,
     String? model,
@@ -112,6 +117,7 @@ class Device {
       isScheduleEnabled: isScheduleEnabled ?? this.isScheduleEnabled,
       scheduleStartTime: scheduleStartTime ?? this.scheduleStartTime,
       scheduleEndTime: scheduleEndTime ?? this.scheduleEndTime,
+      scheduleDays: scheduleDays ?? this.scheduleDays,
     );
   }
 }

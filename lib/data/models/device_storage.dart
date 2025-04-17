@@ -24,6 +24,7 @@ class DeviceStorage {
   int? scheduleStartMinute;
   int? scheduleEndHour;
   int? scheduleEndMinute;
+  late List<bool> scheduleDays;
 
   //convert storage oobject -> pure device object to use in our app
   Device toDevice() {
@@ -36,12 +37,18 @@ class DeviceStorage {
       isPoweredOn: isPoweredOn,
       signal: signal,
       isScheduleEnabled: isScheduleEnabled,
-      scheduleStartTime: scheduleStartHour != null && scheduleStartMinute != null
-          ? TimeOfDay(hour: scheduleStartHour!, minute: scheduleStartMinute!)
-          : null,
-      scheduleEndTime: scheduleEndHour != null && scheduleEndMinute != null
-          ? TimeOfDay(hour: scheduleEndHour!, minute: scheduleEndMinute!)
-          : null,
+      scheduleStartTime:
+          scheduleStartHour != null && scheduleStartMinute != null
+              ? TimeOfDay(
+                hour: scheduleStartHour!,
+                minute: scheduleStartMinute!,
+              )
+              : null,
+      scheduleEndTime:
+          scheduleEndHour != null && scheduleEndMinute != null
+              ? TimeOfDay(hour: scheduleEndHour!, minute: scheduleEndMinute!)
+              : null,
+      scheduleDays: scheduleDays,
     );
   }
 
@@ -59,11 +66,22 @@ class DeviceStorage {
       ..scheduleStartHour = device.scheduleStartTime?.hour
       ..scheduleStartMinute = device.scheduleStartTime?.minute
       ..scheduleEndHour = device.scheduleEndTime?.hour
-      ..scheduleEndMinute = device.scheduleEndTime?.minute;
+      ..scheduleEndMinute = device.scheduleEndTime?.minute
+      ..scheduleDays = device.scheduleDays;
   }
 
   // Convert JSON -> DeviceStorage
   static DeviceStorage fromJson(Map<String, dynamic> json) {
+    // Parse the scheduleDays list from JSON
+    List<bool> parsedScheduleDays;
+    if (json['scheduleDays'] != null) {
+      parsedScheduleDays = List<bool>.from(
+        json['scheduleDays'].map((day) => day == 1),
+      );
+    } else {
+      parsedScheduleDays = List.filled(7, true);
+    }
+
     return DeviceStorage()
       ..id = json['id']
       ..model = json['model']
@@ -76,7 +94,8 @@ class DeviceStorage {
       ..scheduleStartHour = json['scheduleStartHour']
       ..scheduleStartMinute = json['scheduleStartMinute']
       ..scheduleEndHour = json['scheduleEndHour']
-      ..scheduleEndMinute = json['scheduleEndMinute'];
+      ..scheduleEndMinute = json['scheduleEndMinute']
+      ..scheduleDays = parsedScheduleDays;
   }
 
   // Convert DeviceStorage -> JSON
@@ -94,6 +113,7 @@ class DeviceStorage {
       'scheduleStartMinute': scheduleStartMinute,
       'scheduleEndHour': scheduleEndHour,
       'scheduleEndMinute': scheduleEndMinute,
+      'scheduleDays': scheduleDays.map((day) => day ? 1 : 0).toList(),
     };
   }
 }

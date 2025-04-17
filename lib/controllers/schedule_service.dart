@@ -30,11 +30,13 @@ class ScheduleService {
     final devices = _deviceCubit.state;
     final now = DateTime.now();
     final currentTime = TimeOfDay(hour: now.hour, minute: now.minute);
+    final currentDayIndex = now.weekday - 1; // 0 = Monday, 6 = Sunday
 
     for (final device in devices) {
       if (!device.isScheduleEnabled ||
           device.scheduleStartTime == null ||
-          device.scheduleEndTime == null) {
+          device.scheduleEndTime == null ||
+          !_isScheduleEnabledForDay(device, currentDayIndex)) {
         continue;
       }
 
@@ -47,6 +49,14 @@ class ScheduleService {
         _sendPowerCommand(device, false);
       }
     }
+  }
+
+  // Check if schedule is enabled for the given day
+  bool _isScheduleEnabledForDay(Device device, int dayIndex) {
+    if (dayIndex < 0 || dayIndex >= device.scheduleDays.length) {
+      return false;
+    }
+    return device.scheduleDays[dayIndex];
   }
 
   bool _isTimeToTurnOn(Device device, TimeOfDay currentTime) {
@@ -101,24 +111,27 @@ class ScheduleService {
   // Method to schedule notifications for all devices with active schedules
   Future<void> scheduleAllNotifications() async {
     final devices = _deviceCubit.state;
+    final now = DateTime.now();
+    final currentDayIndex = now.weekday - 1; // 0 = Monday, 6 = Sunday
 
     for (final device in devices) {
       if (!device.isScheduleEnabled ||
           device.scheduleStartTime == null ||
-          device.scheduleEndTime == null) {
+          device.scheduleEndTime == null ||
+          !_isScheduleEnabledForDay(device, currentDayIndex)) {
         // Cancel existing notifications if schedule is disabled
         await _notificationService.cancelDeviceNotifications(device.id);
         continue;
       }
 
-      // Schedule notifications for start time
+      // Schedule start time notification
       await _notificationService.scheduleNotification(
         device: device,
         scheduledTime: device.scheduleStartTime!,
         isStartEvent: true,
       );
 
-      // Schedule notification 5 minutes before start time
+      // Schedule preview notification 5 minutes before start time
       await _notificationService.scheduleNotification(
         device: device,
         scheduledTime: device.scheduleStartTime!,
@@ -126,14 +139,14 @@ class ScheduleService {
         showPreview: true,
       );
 
-      // Schedule notifications for end time
+      // Schedule end time notification
       await _notificationService.scheduleNotification(
         device: device,
         scheduledTime: device.scheduleEndTime!,
         isStartEvent: false,
       );
 
-      // Schedule notification 5 minutes before end time
+      // Schedule preview notification 5 minutes before end time
       await _notificationService.scheduleNotification(
         device: device,
         scheduledTime: device.scheduleEndTime!,
