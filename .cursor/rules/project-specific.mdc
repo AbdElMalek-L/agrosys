@@ -1,0 +1,35 @@
+# AGROSYS Specific Guidelines
+
+## Project Overview
+AGROSYS is a Flutter mobile application for agricultural system management, focusing on device management and scheduling. The application follows a clean architecture approach with the following key features:
+
+- Device management and monitoring
+- Schedule creation and management
+- Notification system
+- Background services for continuous monitoring
+- SMS sending capabilities for remote control
+- Dark/light theme support
+- RTL language support (Arabic)
+
+## Key Components
+- AppStateCubit: Manages overall application state
+- DeviceCubit: Manages device-related state
+- ScheduleService: Handles scheduling and device monitoring
+- NotificationService: Manages app notifications
+- BackgroundServiceManager: Manages background tasks
+- SMSController: Handles SMS operations
+
+## Core Functionality
+- The app primarily uses SharedPreferences for data persistence
+- Background tasks run using flutter_foreground_task
+- Notifications are used to alert users about device schedules
+- App supports both light and dark themes with customized theming
+- App is designed with RTL (Arabic) support as the default direction
+
+## Important Considerations
+- Always maintain Arabic language support in all UI components
+- Ensure SMS functionality works properly across different device types
+- Background services must work reliably without being killed by the OS
+- Schedule monitoring should be accurate with proper alarm handling
+- Handle device state updates efficiently
+- Follow Material Design guidelines with the custom app theme 

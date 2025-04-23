@@ -1,0 +1,51 @@
+# Flutter Best Practices
+
+## Performance Optimization
+- Use `const` constructors whenever possible
+- Optimize builds by only rebuilding what changes
+- Keep widget tree as flat as possible
+- Extract widgets that don't need to rebuild
+- Use lazy loading for expensive resources
+- Avoid heavy computations on the UI thread; use isolates when needed
+- Use keys appropriately for widget identification
+
+## Responsive Design
+- Design for multiple screen sizes and orientations
+- Use responsive layout widgets (Expanded, Flexible, LayoutBuilder)
+- Test on various device sizes
+- Consider text scaling for accessibility
+
+## State Management
+- Use BLoC/Cubit pattern for complex state management
+- Follow unidirectional data flow
+- Keep states immutable
+- Avoid unnecessary rebuilds
+
+## Navigation
+- Use named routes for navigation
+- Handle deep linking properly
+- Implement proper error handling and loading states
+- Consider route transitions for better UX
+
+## Localization
+- Support RTL layouts where necessary
+- Use the app's localization system for all user-facing text
+- Follow the localization workflow established in the project
+
+## Accessibility
+- Ensure sufficient contrast ratios
+- Provide semantic labels for screen readers
+- Use appropriate text sizes
+- Implement proper focus traversal
+
+## Testing
+- Write unit tests for business logic
+- Write widget tests for UI components
+- Use mocks and fakes for dependencies
+- Aim for high test coverage on business logic
+
+## Error Handling
+- Use try-catch blocks appropriately
+- Provide meaningful error messages
+- Implement graceful degradation when services fail
+- Log errors in a structured way for better debugging 

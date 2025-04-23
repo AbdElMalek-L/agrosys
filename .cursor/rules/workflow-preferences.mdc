@@ -1,0 +1,10 @@
+# Coding Workflow Preferences
+- Focus only on the areas of code relevant to the task at hand
+- Do not touch code that is unrelated to the task
+- Write thorough tests for all major functionality
+- Always analyze edge cases and handle errors gracefully
+- Avoid making major changes to existing patterns and architecture unless explicitly instructed
+- Consider what other methods and areas of code might be affected by your changes
+- Follow Flutter best practices for performance optimization
+- Document complex logic or non-obvious code decisions
+- Use const constructors whenever possible 
