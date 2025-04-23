@@ -33,9 +33,10 @@ class _DeviceModelsCardState extends State<DeviceModelsCard> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Card(
-      elevation: 0,
-      color: theme.cardColor,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      elevation: 1,
+      shadowColor: Colors.black.withOpacity(0.1),
+      color: theme.colorScheme.surface,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       margin: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
       child: Theme(
         data: theme.copyWith(dividerColor: Colors.transparent),
@@ -79,42 +80,35 @@ class _DeviceModelsCardState extends State<DeviceModelsCard> {
 
   Widget _buildModelItem(String model) {
     final theme = Theme.of(context);
-    return Column(
-      children: [
-        ListTile(
-          title: Text(
-            model,
-            textDirection: TextDirection.rtl,
-            style: TextStyle(
-              fontWeight: FontWeight.w500,
-              color:
-                  _selectedModel == model
-                      ? theme.colorScheme.primary
-                      : theme.textTheme.bodyLarge?.color,
-            ),
+    final isSelected = _selectedModel == model;
+    return Container(
+      color: isSelected ? theme.colorScheme.primary.withOpacity(0.1) : null,
+      child: ListTile(
+        title: Text(
+          model,
+          textDirection: TextDirection.rtl,
+          style: TextStyle(
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+            color:
+                isSelected
+                    ? theme.colorScheme.primary
+                    : theme.textTheme.bodyLarge?.color,
           ),
-          trailing:
-              _selectedModel == model
-                  ? Icon(Icons.check_circle, color: theme.colorScheme.primary)
-                  : null,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          onTap: () {
-            setState(() {
-              _selectedModel = model;
-              _expansionKey++; // Force tile rebuild
-            });
-            widget.onModelSelected?.call(model);
-          },
         ),
-        Divider(
-          indent: 30,
-          endIndent: 30,
-          thickness: 1,
-          color: Theme.of(context).colorScheme.primary,
-        ),
-      ],
+        trailing:
+            isSelected
+                ? Icon(Icons.check_circle, color: theme.colorScheme.primary)
+                : null,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(0)),
+        onTap: () {
+          setState(() {
+            _selectedModel = model;
+            _isExpanded = false;
+            _expansionKey++;
+          });
+          widget.onModelSelected?.call(model);
+        },
+      ),
     );
   }
 }
