@@ -7,7 +7,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:agrosys/data/models/device_storage.dart';
 import 'package:agrosys/controllers/sms_controller.dart';
 import 'package:agrosys/domain/models/device.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:agrosys/controllers/notification_service.dart';
 
 // The callback function should always be a top-level function.

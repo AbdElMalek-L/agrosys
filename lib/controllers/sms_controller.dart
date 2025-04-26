@@ -114,7 +114,7 @@ class SMSController {
       });
 
       // Start listening for incoming SMS
-      await _smsAutoFill.listenForCode;
+      _smsAutoFill.listenForCode;
 
       // Timeout fallback
       Future.delayed(timeout, () {
