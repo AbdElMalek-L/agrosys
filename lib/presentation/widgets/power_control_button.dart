@@ -5,14 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 
-/// A widget that displays a power control button (Lottie animation)
-/// and handles toggling the power state of a device via SMS.
 class PowerControlButton extends StatelessWidget {
   final Device device;
-  final AppState appState; // Needed to get the selected device index
-  final Function(String, String) onTogglePower; // Callback to send SMS
+  final AppState appState;
+  final Function(String, String) onTogglePower;
+  final bool isWaiting; // ✅ nouveau paramètre
 
-  // Asset paths for Lottie animations
   final String controlAssetPowerOn = "assets/power_animation.json";
   final String controlAssetPowerOff = "assets/power_off.json";
 
@@ -21,53 +19,56 @@ class PowerControlButton extends StatelessWidget {
     required this.device,
     required this.appState,
     required this.onTogglePower,
+    this.isWaiting = false, // ✅ valeur par défaut
   });
 
   @override
   Widget build(BuildContext context) {
-    // Listen to DeviceCubit changes to update the button state
     return BlocBuilder<DeviceCubit, List<Device>>(
       builder: (context, devices) {
-        // Ensure we have the latest state for the *currently selected* device
-        // This assumes the 'device' passed in might be stale if not updated
-        // by the parent widget listening to the cubit. A safer approach might
-        // be to just use appState.selectedDeviceIndex directly if 'devices'
-        // list is guaranteed to be up-to-date by the BlocBuilder.
         final currentDevice = devices[appState.selectedDeviceIndex];
+
+        final bool isOn = currentDevice.isPoweredOn;
+        final String command =
+            "${currentDevice.passWord}#${!isOn ? "ON" : "OFF"}#";
 
         return Column(
           children: [
             Center(
               child: GestureDetector(
-                onTap: () {
-                  // 1. Update local state via Cubit
-                  context.read<DeviceCubit>().togglePower(currentDevice);
-
-                  // 2. Prepare SMS command
-                  String phoneNumber = currentDevice.phoneNumber;
-                  // Use the *new* power state after toggle for the command
-                  String togglePowerCmd =
-                      "${currentDevice.passWord}#${!currentDevice.isPoweredOn ? "ON" : "OFF"}#";
-
-                  // 3. Trigger SMS sending via callback
-                  onTogglePower(phoneNumber, togglePowerCmd);
-                },
-                child: Lottie.asset(
-                  // Use currentDevice state to determine which animation to show
-                  currentDevice.isPoweredOn
-                      ? controlAssetPowerOff // Show 'Off' animation if powered On
-                      : controlAssetPowerOn, // Show 'On' animation if powered Off
-                  height: 150,
-                  width: 150,
-                  fit: BoxFit.cover,
+                onTap:
+                    isWaiting
+                        ? null
+                        : () {
+                          onTogglePower(currentDevice.phoneNumber, command);
+                        },
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Lottie.asset(
+                      isOn ? controlAssetPowerOff : controlAssetPowerOn,
+                      height: 150,
+                      width: 150,
+                      fit: BoxFit.cover,
+                      animate: !isWaiting, // ✅ stop animation if waiting
+                    ),
+                    if (isWaiting)
+                      const Positioned(
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                  ],
                 ),
               ),
             ),
             Center(
               child: Text(
-                // Use currentDevice state for the label
-                currentDevice.isPoweredOn ? "إيقاف التشغيل" : "تشغيل",
+                isWaiting
+                    ? "جارٍ الإنتظار..."
+                    : isOn
+                    ? "إيقاف التشغيل"
+                    : "تشغيل",
                 textDirection: TextDirection.rtl,
+                style: const TextStyle(fontSize: 16),
               ),
             ),
           ],

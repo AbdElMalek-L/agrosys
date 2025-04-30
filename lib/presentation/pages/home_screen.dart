@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:agrosys/domain/models/app_state.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
 import 'package:flutter/material.dart';
@@ -27,11 +29,24 @@ class _HomeScreenState extends State<HomeScreen> {
   final SMSController _smsController = SMSController();
   final SmsQuery _query = SmsQuery();
   String? _lastSms;
+  Timer? _smsRefreshTimer;
+  bool _initialCheckDone = false;
+  bool _isWaitingForConfirmation = false;
 
   @override
   void initState() {
     super.initState();
     _fetchLastSms();
+    _smsRefreshTimer = Timer.periodic(
+      const Duration(seconds: 10),
+      (_) => _fetchLastSms(),
+    );
+  }
+
+  @override
+  void dispose() {
+    _smsRefreshTimer?.cancel();
+    super.dispose();
   }
 
   Future<void> _fetchLastSms() async {
@@ -40,25 +55,72 @@ class _HomeScreenState extends State<HomeScreen> {
       permission = await Permission.sms.request();
     }
 
-    if (permission.isGranted) {
-      final messages = await _query.querySms(
-        kinds: [SmsQueryKind.inbox],
-        count: 1,
-      );
+    if (!permission.isGranted) return;
 
-      if (messages.isNotEmpty) {
+    final messages = await _query.querySms(
+      kinds: [SmsQueryKind.inbox],
+      count: 1,
+    );
+    if (messages.isEmpty) return;
+
+    final latest = messages.first;
+    final newMessage = latest.body;
+    final sender = latest.address ?? '';
+
+    final devices = context.read<DeviceCubit>().state;
+    final selectedIndex =
+        context.read<AppStateCubit>().state.selectedDeviceIndex;
+    if (devices.isEmpty || selectedIndex >= devices.length) return;
+
+    final selectedDevice = devices[selectedIndex];
+    final selectedDeviceNumber = selectedDevice.phoneNumber
+        .replaceAll('+', '')
+        .replaceAll(' ', '');
+    final senderClean = sender.replaceAll('+', '').replaceAll(' ', '');
+
+    if (senderClean.contains(selectedDeviceNumber)) {
+      if (_lastSms != newMessage) {
         setState(() {
-          _lastSms = messages.first.body;
+          _lastSms = newMessage;
         });
 
-        print("📩 Dernier SMS: $_lastSms");
+        if (_isWaitingForConfirmation) {
+          if (newMessage!.toUpperCase().contains("ON")) {
+            context.read<DeviceCubit>().updatePowerState(selectedIndex, true);
+            ;
+          } else if (newMessage.toUpperCase().contains("OFF")) {
+            context.read<DeviceCubit>().updatePowerState(selectedIndex, false);
+            ;
+          }
+          _isWaitingForConfirmation = false;
+        }
+
+        if (_initialCheckDone && mounted) {
+          showDialog(
+            context: context,
+            builder:
+                (_) => AlertDialog(
+                  title: const Text("\u{1F4E9} رسالة جديدة من الجهاز"),
+                  content: Text(newMessage ?? ''),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text("إغلاق"),
+                    ),
+                  ],
+                ),
+          );
+        }
+        _initialCheckDone = true;
       }
-    } else {
-      print("❌ Permission SMS refusée");
     }
   }
 
   void sendSMS(String phoneNumber, String command) {
+    setState(() {
+      _isWaitingForConfirmation = true;
+    });
+
     _smsController.sendCommandWithResponse(
       context: context,
       phoneNumber: phoneNumber,
@@ -72,20 +134,14 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
       onResult: (success, response) {
-        if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('تم إرسال الأمر بنجاح'),
-              backgroundColor: Colors.green,
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        } else {
+        if (!success) {
+          setState(() {
+            _isWaitingForConfirmation = false;
+          });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: const Text('فشل إرسال الأمر'),
               backgroundColor: Colors.red,
-              duration: const Duration(seconds: 2),
             ),
           );
         }
@@ -108,17 +164,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 20),
                     const Center(child: Header(title: "لوحة التحكم")),
                     const SizedBox(height: 20),
-                    if (_lastSms != null)
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Text(
-                          "📥 Dernier SMS reçu :\n$_lastSms",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
                     Expanded(
                       child: ListView(
                         padding: const EdgeInsets.all(10),
@@ -133,6 +178,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             PowerControlButton(
                               device: devices[appState.selectedDeviceIndex],
                               appState: appState,
+                              isWaiting: _isWaitingForConfirmation,
                               onTogglePower: sendSMS,
                             ),
                             const SizedBox(height: 20),

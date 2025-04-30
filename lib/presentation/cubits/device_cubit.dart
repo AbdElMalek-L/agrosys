@@ -23,6 +23,21 @@ class DeviceCubit extends Cubit<List<Device>> {
     emit(devicesList);
   }
 
+  void updatePowerState(int deviceIndex, bool isPoweredOn) {
+    final currentDevices = state;
+
+    if (deviceIndex >= 0 && deviceIndex < currentDevices.length) {
+      final updatedDevice = currentDevices[deviceIndex].copyWith(
+        isPoweredOn: isPoweredOn,
+      );
+
+      final updatedList = List<Device>.from(currentDevices);
+      updatedList[deviceIndex] = updatedDevice;
+
+      emit(updatedList);
+    }
+  }
+
   Future<void> addDevice(
     String model,
     String name,
