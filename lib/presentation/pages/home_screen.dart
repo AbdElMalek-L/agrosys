@@ -100,7 +100,7 @@ class _HomeScreenState extends State<HomeScreen> {
             context: context,
             builder:
                 (_) => AlertDialog(
-                  title: const Text("\u{1F4E9} رسالة جديدة من الجهاز"),
+                  title: const Text("\u{1F4E9} رسالة من الجهاز"),
                   content: Text(newMessage ?? ''),
                   actions: [
                     TextButton(
