@@ -1,20 +1,15 @@
-import 'package:agrosys/controllers/sms_controller.dart'; // Import SMSController
 import 'package:flutter/material.dart';
 
 // Callback type for when the user confirms and saves the number
-// typedef SaveNumberCallback = void Function(String phoneNumber); // Keep if needed elsewhere, but not used here
+typedef SaveNumberCallback = void Function(String phoneNumber);
 
 /// Shows the 'Set Default Number' dialog.
 ///
 /// [context]: The build context to show the dialog in.
-/// [devicePhoneNumber]: The phone number of the device to send the command to.
-/// [devicePassword]: The password of the device for the command.
 /// [onSave]: The callback function to execute when the user saves the number.
 Future<void> showSetDefaultNumberPopup(
   BuildContext context,
-  String devicePhoneNumber,
-  String devicePassword,
-  // SaveNumberCallback onSave, // Remove onSave if only SMS is needed
+  SaveNumberCallback onSave,
 ) async {
   // Ensure the context is still mounted before showing the dialog
   if (!context.mounted) return;
@@ -23,28 +18,17 @@ Future<void> showSetDefaultNumberPopup(
     context: context,
     barrierDismissible: false, // Prevent closing by tapping outside initially
     builder: (BuildContext dialogContext) {
-      // Pass the context and necessary device info to the stateful dialog widget
-      return SetDefaultNumberDialog(
-        devicePhoneNumber: devicePhoneNumber,
-        devicePassword: devicePassword,
-        // onSave: onSave, // Pass if needed
-      );
+      // Pass the context and callback to the stateful dialog widget
+      return SetDefaultNumberDialog(onSave: onSave);
     },
   );
 }
 
 /// The stateful widget for the dialog content.
 class SetDefaultNumberDialog extends StatefulWidget {
-  // final SaveNumberCallback onSave;
-  final String devicePhoneNumber;
-  final String devicePassword;
+  final SaveNumberCallback onSave;
 
-  const SetDefaultNumberDialog({
-    super.key,
-    required this.devicePhoneNumber,
-    required this.devicePassword,
-    // required this.onSave,
-  });
+  const SetDefaultNumberDialog({super.key, required this.onSave});
 
   @override
   _SetDefaultNumberDialogState createState() => _SetDefaultNumberDialogState();
@@ -54,74 +38,22 @@ class _SetDefaultNumberDialogState extends State<SetDefaultNumberDialog> {
   bool _showInput = false;
   final TextEditingController _numberController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
-  final SMSController _smsController =
-      SMSController(); // Instantiate SMS controller
 
   @override
   void dispose() {
     _numberController.dispose();
-    _smsController.dispose(); // Dispose SMS controller
     super.dispose();
   }
 
-  // Handles sending the SMS command
-  void _sendSetDefaultNumberCommand() {
+  // Handles saving the number
+  void _saveNumber() {
     // Validate the input field
-    if (!(_formKey.currentState?.validate() ?? false)) {
-      return; // Don't proceed if invalid
+    if (_formKey.currentState?.validate() ?? false) {
+      // Call the provided callback with the entered number
+      widget.onSave(_numberController.text);
+      // Close the dialog using the correct context
+      Navigator.of(context).pop();
     }
-
-    final String defaultNumberEntered = _numberController.text;
-    // Remove '+' if present for the command string
-    final String numberForCommand =
-        defaultNumberEntered.startsWith('+')
-            ? defaultNumberEntered.substring(1)
-            : defaultNumberEntered;
-
-    // Construct the command
-    final String command =
-        "${widget.devicePassword}#TEL00$numberForCommand#001#";
-
-    // Use the context available in the state
-    final currentContext = context;
-
-    // Close the dialog first
-    Navigator.of(currentContext).pop();
-
-    // Send the command using the *device's* phone number
-    _smsController.sendCommandWithResponse(
-      context: currentContext, // Pass the captured context
-      phoneNumber: widget.devicePhoneNumber,
-      command: command,
-      onMessage: (message) {
-        // Show intermediate messages if needed (e.g., "Sending SMS...")
-        if (currentContext.mounted) {
-          // Check mount status before showing snackbar
-          ScaffoldMessenger.of(currentContext).showSnackBar(
-            SnackBar(
-              content: Text(message),
-              duration: const Duration(seconds: 2),
-            ),
-          );
-        }
-      },
-      onResult: (success, response) {
-        if (!currentContext.mounted) return; // Check mount status again
-        // Show final result
-        ScaffoldMessenger.of(currentContext).showSnackBar(
-          SnackBar(
-            content: Text(
-              success
-                  ? 'تم تعيين الرقم الافتراضي بنجاح ${response != null ? "($response)" : ""}'
-                  : 'فشل تعيين الرقم الافتراضي',
-            ),
-            backgroundColor: success ? Colors.green : Colors.red,
-          ),
-        );
-        // Optionally call the original onSave callback if it was kept and needed
-        // if(success) { widget.onSave(defaultNumberEntered); }
-      },
-    );
   }
 
   @override
@@ -241,10 +173,15 @@ class _SetDefaultNumberDialogState extends State<SetDefaultNumberDialog> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
+<<<<<<< HEAD
                   onPressed: _sendSetDefaultNumberCommand,
                   child: const Text(
                     'حفظ الرقم',
                   ), // Call the new SMS sending function
+=======
+                  child: const Text('حفظ الرقم'),
+                  onPressed: _saveNumber,
+>>>>>>> parent of c530d7f (add sms for password update and setting the default phone number)
                 ),
               ],
     );

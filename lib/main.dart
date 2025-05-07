@@ -12,15 +12,12 @@ import 'package:agrosys/presentation/pages/intro_page.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
 import 'package:agrosys/presentation/themes/app_theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:agrosys/controllers/sms_controller.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 
 void main() async {
   // Initialize Arabic locale data
   await initializeDateFormatting('ar');
   WidgetsFlutterBinding.ensureInitialized();
-
-
 
   // Initialize SharedPreferences
   final prefs = await SharedPreferences.getInstance();
@@ -32,7 +29,6 @@ void main() async {
   // Create cubit instances
   final DeviceCubit deviceCubit = DeviceCubit(deviceRepo);
   final AppStateCubit appStateCubit = AppStateCubit(appStateRepo);
-
 
   // Run the app with providers
   runApp(
@@ -67,7 +63,7 @@ class MyApp extends StatelessWidget {
         providers: [
           Provider<DeviceRepo>.value(value: deviceRepo),
           Provider<AppStateRepo>.value(value: appStateRepo),
-       ],
+        ],
         child: MultiBlocProvider(
           providers: [
             BlocProvider<AppStateCubit>.value(value: appStateCubit),

@@ -86,10 +86,8 @@ class _HomeScreenState extends State<HomeScreen> {
         if (_isWaitingForConfirmation) {
           if (newMessage!.toUpperCase().contains("ON")) {
             context.read<DeviceCubit>().updatePowerState(selectedIndex, true);
-            ;
           } else if (newMessage.toUpperCase().contains("OFF")) {
             context.read<DeviceCubit>().updatePowerState(selectedIndex, false);
-            ;
           }
           _isWaitingForConfirmation = false;
         }
@@ -182,28 +180,45 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             const SizedBox(height: 20),
                             ElevatedButton(
-  onPressed: devices.isNotEmpty ? () async {
-    final selectedDevice = devices[appState.selectedDeviceIndex];
-    final phoneNumber = selectedDevice.phoneNumber;
-    final scheduledTime = DateTime.now().add(const Duration(seconds: 10));
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Scheduling test SMS in 10 seconds...')),
-    );
-    
-    await _smsController.scheduleSMS(
-      phoneNumber: phoneNumber,
-      message: 'TEST SCHEDULED SMS',
-      scheduledTime: scheduledTime,
-      onMessage: (message) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(message)),
-        );
-      },
-    );
-  } : null,
-  child: const Text('جدولة رسالة اختبار بعد 10 ثواني'),
-),
+                              onPressed:
+                                  devices.isNotEmpty
+                                      ? () async {
+                                        final selectedDevice =
+                                            devices[appState
+                                                .selectedDeviceIndex];
+                                        final phoneNumber =
+                                            selectedDevice.phoneNumber;
+                                        final scheduledTime = DateTime.now()
+                                            .add(const Duration(seconds: 10));
+
+                                        ScaffoldMessenger.of(
+                                          context,
+                                        ).showSnackBar(
+                                          const SnackBar(
+                                            content: Text(
+                                              'Scheduling test SMS in 10 seconds...',
+                                            ),
+                                          ),
+                                        );
+
+                                        await _smsController.scheduleSMS(
+                                          phoneNumber: phoneNumber,
+                                          message: 'TEST SCHEDULED SMS',
+                                          scheduledTime: scheduledTime,
+                                          onMessage: (message) {
+                                            ScaffoldMessenger.of(
+                                              context,
+                                            ).showSnackBar(
+                                              SnackBar(content: Text(message)),
+                                            );
+                                          },
+                                        );
+                                      }
+                                      : null,
+                              child: const Text(
+                                'جدولة رسالة اختبار بعد 10 ثواني',
+                              ),
+                            ),
                             BlocBuilder<AppStateCubit, AppState>(
                               builder: (context, appState) {
                                 return BlocBuilder<DeviceCubit, List<Device>>(

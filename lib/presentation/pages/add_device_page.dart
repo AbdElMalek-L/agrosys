@@ -280,23 +280,19 @@ class _AddDevicePageState extends State<AddDevicePage> {
     // --- Show the popup AFTER adding device ---
     // Check mount status again before showing dialog
     if (isMounted) {
-      // Pass device phone number and password to the popup
-      await showSetDefaultNumberPopup(
-        context,
-        phoneNumberWithCountryCode, // Device phone number
-        _passwordController.text, // Device password
-        // (String number) { // Original callback removed, handled by SMS now
-        //   print("Default number to save: $number");
-        //   if (context.mounted) {
-        //     ScaffoldMessenger.of(context).showSnackBar(
-        //       SnackBar(
-        //         content: Text('تم حفظ الرقم الافتراضي: $number'),
-        //         backgroundColor: Colors.green,
-        //       ),
-        //     );
-        //   }
-        // }
-      );
+      await showSetDefaultNumberPopup(context, (String number) {
+        // TODO: Implement actual saving logic here (e.g., using SharedPreferences)
+        print("Default number to save: $number");
+        // Show feedback (check mount status before accessing ScaffoldMessenger)
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('تم حفظ الرقم الافتراضي: $number'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      });
     }
     // --- End popup ---
 
