@@ -12,10 +12,7 @@ import 'package:agrosys/presentation/pages/intro_page.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
 import 'package:agrosys/presentation/themes/app_theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:agrosys/controllers/schedule_service.dart';
 import 'package:agrosys/controllers/sms_controller.dart';
-import 'package:agrosys/controllers/background_service.dart';
-import 'package:agrosys/controllers/notification_service.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 
 void main() async {
@@ -23,12 +20,7 @@ void main() async {
   await initializeDateFormatting('ar');
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize background service for running in background
-  await BackgroundServiceManager.initialize();
 
-  // Initialize notification service
-  final notificationService = NotificationService();
-  await notificationService.initialize();
 
   // Initialize SharedPreferences
   final prefs = await SharedPreferences.getInstance();
@@ -41,18 +33,6 @@ void main() async {
   final DeviceCubit deviceCubit = DeviceCubit(deviceRepo);
   final AppStateCubit appStateCubit = AppStateCubit(appStateRepo);
 
-  // Create SMS controller and schedule service
-  final SMSController smsController = SMSController();
-  final ScheduleService scheduleService = ScheduleService(
-    deviceCubit,
-    smsController,
-  );
-
-  // Start schedule monitoring (in-app)
-  scheduleService.startScheduleMonitoring();
-
-  // Schedule notifications for all devices
-  await scheduleService.scheduleAllNotifications();
 
   // Run the app with providers
   runApp(
@@ -61,8 +41,6 @@ void main() async {
       appStateRepo: appStateRepo,
       deviceCubit: deviceCubit,
       appStateCubit: appStateCubit,
-      scheduleService: scheduleService,
-      notificationService: notificationService,
     ),
   );
 }
@@ -72,8 +50,6 @@ class MyApp extends StatelessWidget {
   final AppStateRepo appStateRepo;
   final DeviceCubit deviceCubit;
   final AppStateCubit appStateCubit;
-  final ScheduleService scheduleService;
-  final NotificationService notificationService;
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
   MyApp({
@@ -82,8 +58,6 @@ class MyApp extends StatelessWidget {
     required this.appStateRepo,
     required this.deviceCubit,
     required this.appStateCubit,
-    required this.scheduleService,
-    required this.notificationService,
   });
 
   @override
@@ -93,9 +67,7 @@ class MyApp extends StatelessWidget {
         providers: [
           Provider<DeviceRepo>.value(value: deviceRepo),
           Provider<AppStateRepo>.value(value: appStateRepo),
-          Provider<ScheduleService>.value(value: scheduleService),
-          Provider<NotificationService>.value(value: notificationService),
-        ],
+       ],
         child: MultiBlocProvider(
           providers: [
             BlocProvider<AppStateCubit>.value(value: appStateCubit),

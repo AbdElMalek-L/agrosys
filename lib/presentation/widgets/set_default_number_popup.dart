@@ -241,9 +241,10 @@ class _SetDefaultNumberDialogState extends State<SetDefaultNumberDialog> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
-                  child: const Text('حفظ الرقم'),
-                  onPressed:
-                      _sendSetDefaultNumberCommand, // Call the new SMS sending function
+                  onPressed: _sendSetDefaultNumberCommand,
+                  child: const Text(
+                    'حفظ الرقم',
+                  ), // Call the new SMS sending function
                 ),
               ],
     );

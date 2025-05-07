@@ -88,7 +88,7 @@ class _SchedulePageState extends State<SchedulePage>
               hourMinuteColor: theme.colorScheme.primaryContainer,
               hourMinuteTextColor: theme.colorScheme.onPrimaryContainer,
               dialHandColor: theme.colorScheme.primary,
-              dialBackgroundColor: theme.colorScheme.surfaceVariant,
+              dialBackgroundColor: theme.colorScheme.surfaceContainerHighest,
               hourMinuteTextStyle: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -509,7 +509,8 @@ class _SchedulePageState extends State<SchedulePage>
                                         selectedColor: colorScheme.primary,
                                         backgroundColor:
                                             theme.brightness == Brightness.dark
-                                                ? colorScheme.surfaceVariant
+                                                ? colorScheme
+                                                    .surfaceContainerHighest
                                                 : Colors.grey.shade100,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(

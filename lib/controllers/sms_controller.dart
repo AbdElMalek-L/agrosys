@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_background_messenger/flutter_background_messenger.dart';
+import 'package:flutter/services.dart';
 import 'package:sms_autofill/sms_autofill.dart';
 import 'package:agrosys/controllers/sent_sms.dart';
 
@@ -8,7 +8,10 @@ import 'package:agrosys/controllers/sent_sms.dart';
 typedef MessageCallback = void Function(String message);
 
 class SMSController {
-  final FlutterBackgroundMessenger _messenger = FlutterBackgroundMessenger();
+  static const MethodChannel _channel = MethodChannel(
+    'com.example.agrosys/sms',
+  );
+
   final SmsAutoFill _smsAutoFill = SmsAutoFill();
   final SentSMSTracker _smsTracker = SentSMSTracker();
   StreamSubscription? _smsSubscription;
@@ -23,14 +26,66 @@ class SMSController {
     return _smsTracker.getSentSMSForPhoneNumber(phoneNumber);
   }
 
+  /// Check if the app has SMS permission
+  Future<bool> _checkSmsPermission() async {
+    try {
+      return await _channel.invokeMethod('checkSmsPermission');
+    } on PlatformException catch (e) {
+      debugPrint('Error checking SMS permission: ${e.message}');
+      return false;
+    }
+  }
+
+  /// Request SMS permission
+  Future<void> _requestSmsPermission() async {
+    try {
+      await _channel.invokeMethod('requestSmsPermission');
+    } on PlatformException catch (e) {
+      debugPrint('Error requesting SMS permission: ${e.message}');
+    }
+  }
+
+  /// Send SMS immediately
+  Future<bool> _sendSms({
+    required String phoneNumber,
+    required String message,
+  }) async {
+    try {
+      return await _channel.invokeMethod('sendSms', {
+        'phoneNumber': phoneNumber,
+        'message': message,
+      });
+    } on PlatformException catch (e) {
+      debugPrint('Error sending SMS: ${e.message}');
+      return false;
+    }
+  }
+
+  /// Schedule SMS to be sent at a specific time
+  Future<bool> _scheduleSms({
+    required String phoneNumber,
+    required String message,
+    required DateTime scheduledTime,
+  }) async {
+    try {
+      return await _channel.invokeMethod('scheduleSms', {
+        'phoneNumber': phoneNumber,
+        'message': message,
+        'triggerTimeInMillis': scheduledTime.millisecondsSinceEpoch,
+      });
+    } on PlatformException catch (e) {
+      debugPrint('Error scheduling SMS: ${e.message}');
+      return false;
+    }
+  }
+
   /// Send a simple SMS without waiting for response or UI updates
-  /// Used for background operations
   Future<bool> sendSimpleSMS({
     required String phoneNumber,
     required String message,
   }) async {
     try {
-      final success = await _messenger.sendSMS(
+      final success = await _sendSms(
         phoneNumber: phoneNumber,
         message: message,
       );
@@ -47,6 +102,7 @@ class SMSController {
 
       return success;
     } catch (e) {
+      debugPrint('Error in sendSimpleSMS: $e');
       return false;
     }
   }
@@ -59,7 +115,6 @@ class SMSController {
     Duration timeout = const Duration(seconds: 15),
     MessageCallback? onMessage,
   }) async {
-    // Capture the context in a local function to avoid async gap issues
     void showMessage(String message) {
       if (onMessage != null) {
         onMessage(message);
@@ -69,7 +124,18 @@ class SMSController {
     }
 
     try {
-      final success = await _messenger.sendSMS(
+      // Check SMS permission before sending
+      final hasPermission = await _checkSmsPermission();
+      if (!hasPermission) {
+        await _requestSmsPermission();
+        if (!await _checkSmsPermission()) {
+          showMessage("❌ SMS permission denied");
+          onResult(false, null);
+          return;
+        }
+      }
+
+      final success = await _sendSms(
         phoneNumber: phoneNumber,
         message: command,
       );
@@ -94,17 +160,13 @@ class SMSController {
       _smsTracker.addSentSMS(sentSMS);
 
       bool received = false;
-
-      // Cancel any existing subscription
       await _smsSubscription?.cancel();
 
-      // Start listening for SMS responses
       _smsSubscription = _smsAutoFill.code.listen((String? code) {
         if (code != null && !received) {
           received = true;
           showMessage("✅ Response: $code");
 
-          // Update the sent SMS with the response
           final updatedSMS = sentSMS.copyWith(success: true, response: code);
           _smsTracker.addSentSMS(updatedSMS);
 
@@ -113,15 +175,12 @@ class SMSController {
         }
       });
 
-      // Start listening for incoming SMS
-      await _smsAutoFill.listenForCode;
+      _smsAutoFill.listenForCode;
 
-      // Timeout fallback
       Future.delayed(timeout, () {
         if (!received) {
           showMessage("⏳ No response received (timeout)");
 
-          // Update the sent SMS to indicate timeout
           final updatedSMS = sentSMS.copyWith(
             success: false,
             response: "Timeout - no response received",
@@ -139,8 +198,6 @@ class SMSController {
     }
   }
 
-  /// Shows a snackbar with the given message
-  /// Note: This should only be called when we're sure the context is still valid
   void _showSnackBar(BuildContext context, String message) {
     if (!context.mounted) return;
 
@@ -151,12 +208,52 @@ class SMSController {
         content: Text(message),
         behavior: SnackBarBehavior.floating,
         backgroundColor: Colors.black87,
-        duration: Duration(seconds: 3),
+        duration: const Duration(seconds: 3),
       ),
     );
   }
 
-  // Clean up resources when done
+  Future<void> scheduleSMS({
+    required String phoneNumber,
+    required String message,
+    required DateTime scheduledTime,
+    MessageCallback? onMessage,
+  }) async {
+    try {
+      final hasPermission = await _checkSmsPermission();
+      if (!hasPermission) {
+        await _requestSmsPermission();
+        if (!await _checkSmsPermission()) {
+          if (onMessage != null) onMessage("❌ SMS permission denied");
+          return;
+        }
+      }
+
+      final success = await _scheduleSms(
+        phoneNumber: phoneNumber,
+        message: message,
+        scheduledTime: scheduledTime,
+      );
+
+      final sentSMS = SentSMS(
+        phoneNumber: phoneNumber,
+        message: message,
+        timestamp: scheduledTime,
+        success: success,
+        response: null,
+      );
+      _smsTracker.addSentSMS(sentSMS);
+
+      if (onMessage != null) {
+        onMessage(success
+            ? "✅ SMS scheduled for ${scheduledTime.toString()}"
+            : "❌ Failed to schedule SMS");
+      }
+    } catch (e) {
+      if (onMessage != null) onMessage("⚠️ Error scheduling SMS: $e");
+    }
+  }
+
   void dispose() {
     _smsSubscription?.cancel();
   }
