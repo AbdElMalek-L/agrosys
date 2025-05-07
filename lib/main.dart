@@ -20,8 +20,6 @@ void main() async {
   await initializeDateFormatting('ar');
   WidgetsFlutterBinding.ensureInitialized();
 
-
-
   // Initialize SharedPreferences
   final prefs = await SharedPreferences.getInstance();
 
@@ -32,7 +30,6 @@ void main() async {
   // Create cubit instances
   final DeviceCubit deviceCubit = DeviceCubit(deviceRepo);
   final AppStateCubit appStateCubit = AppStateCubit(appStateRepo);
-
 
   // Run the app with providers
   runApp(
@@ -67,7 +64,7 @@ class MyApp extends StatelessWidget {
         providers: [
           Provider<DeviceRepo>.value(value: deviceRepo),
           Provider<AppStateRepo>.value(value: appStateRepo),
-       ],
+        ],
         child: MultiBlocProvider(
           providers: [
             BlocProvider<AppStateCubit>.value(value: appStateCubit),

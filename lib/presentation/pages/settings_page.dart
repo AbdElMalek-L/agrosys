@@ -22,6 +22,7 @@ class _SettingsPageState extends State<SettingsPage> {
   bool _oldPasswordVisible = false;
   bool _newPasswordVisible = false;
   late Device _currentDevice;
+  bool _isResponseEnabled = true;
 
   final _formKey = GlobalKey<FormState>();
   final SMSController _smsController = SMSController();
@@ -158,6 +159,41 @@ class _SettingsPageState extends State<SettingsPage> {
     FocusScope.of(context).unfocus();
   }
 
+  Future<void> _toggleResponseMessages(bool value) async {
+    setState(() {
+      _isResponseEnabled = value;
+    });
+
+    // Send the appropriate command to the device
+    final command = value ? '#R#' : '#N#';
+    await _smsController.sendCommandWithResponse(
+      context: context,
+      phoneNumber: _currentDevice.phoneNumber,
+      command: '${_currentDevice.passWord}$command',
+      onMessage: (message) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+      },
+      onResult: (success, response) {
+        if (!success) {
+          setState(() {
+            _isResponseEnabled = !value; // Revert the toggle if command failed
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('فشل في تغيير حالة الردود'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      },
+    );
+  }
+
   void _confirmDelete() {
     showDialog(
       context: context,
@@ -234,6 +270,59 @@ class _SettingsPageState extends State<SettingsPage> {
                   }
                   return null;
                 },
+              ),
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Theme.of(context).dividerColor.withOpacity(0.1),
+                  ),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.notifications_active,
+                          size: 20,
+                          color:
+                              _isResponseEnabled
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface.withOpacity(0.5),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          'تفعيل الردود',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.w500),
+                        ),
+                      ],
+                    ),
+                    Switch(
+                      value: _isResponseEnabled,
+                      onChanged: _toggleResponseMessages,
+                      activeColor: Theme.of(context).colorScheme.primary,
+                      activeTrackColor: Theme.of(
+                        context,
+                      ).colorScheme.primary.withOpacity(0.3),
+                      inactiveThumbColor: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.5),
+                      inactiveTrackColor: Theme.of(
+                        context,
+                      ).colorScheme.onSurface.withOpacity(0.1),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 24),
               _buildPasswordCard(),

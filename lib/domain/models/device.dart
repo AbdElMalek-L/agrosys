@@ -49,7 +49,14 @@ class Device {
     this.scheduleStartTime,
     this.scheduleEndTime,
     List<bool>? scheduleDays,
-  }) : scheduleDays = scheduleDays ?? List.filled(7, true);
+  }) : scheduleDays = scheduleDays ?? List.filled(7, true) {
+    // Debug logs
+    debugPrint('Device: Creating new device $name');
+    debugPrint('Device: Schedule enabled: $isScheduleEnabled');
+    debugPrint('Device: Schedule days: ${this.scheduleDays}');
+    debugPrint('Device: Start time: $scheduleStartTime');
+    debugPrint('Device: End time: $scheduleEndTime');
+  }
 
   Device togglePower() {
     return Device(

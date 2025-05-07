@@ -1,12 +1,79 @@
 import 'package:flutter/material.dart';
 import 'package:agrosys/domain/models/device.dart';
-import 'package:intl/intl.dart';
+import 'package:agrosys/presentation/services/schedule_service.dart';
 import 'package:agrosys/presentation/pages/schedule_page.dart';
+import 'package:intl/intl.dart';
 
-class ScheduleCard extends StatelessWidget {
+class ScheduleCard extends StatefulWidget {
   final Device device;
 
   const ScheduleCard({super.key, required this.device});
+
+  @override
+  State<ScheduleCard> createState() => _ScheduleCardState();
+}
+
+class _ScheduleCardState extends State<ScheduleCard> {
+  final ScheduleService _scheduleService = ScheduleService();
+
+  @override
+  void initState() {
+    super.initState();
+    debugPrint('ScheduleCard: Initializing for device ${widget.device.name}');
+    debugPrint(
+      'ScheduleCard: Schedule enabled: ${widget.device.isScheduleEnabled}',
+    );
+    if (widget.device.isScheduleEnabled) {
+      debugPrint('ScheduleCard: Starting schedule service');
+      _scheduleService.startScheduleCheck(widget.device);
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    debugPrint('ScheduleCard: Setting context for schedule service');
+    _scheduleService.setContext(context);
+  }
+
+  @override
+  void dispose() {
+    debugPrint('ScheduleCard: Disposing schedule service');
+    _scheduleService.stopScheduleCheck();
+    super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(ScheduleCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    debugPrint('ScheduleCard: Widget updated');
+    debugPrint(
+      'ScheduleCard: Old schedule enabled: ${oldWidget.device.isScheduleEnabled}',
+    );
+    debugPrint(
+      'ScheduleCard: New schedule enabled: ${widget.device.isScheduleEnabled}',
+    );
+
+    if (_hasScheduleChanged(oldWidget.device, widget.device)) {
+      debugPrint('ScheduleCard: Schedule properties changed, updating service');
+      _scheduleService.updateSchedule(widget.device);
+    }
+  }
+
+  bool _hasScheduleChanged(Device oldDevice, Device newDevice) {
+    return oldDevice.isScheduleEnabled != newDevice.isScheduleEnabled ||
+        oldDevice.scheduleStartTime != newDevice.scheduleStartTime ||
+        oldDevice.scheduleEndTime != newDevice.scheduleEndTime ||
+        !_areListsEqual(oldDevice.scheduleDays, newDevice.scheduleDays);
+  }
+
+  bool _areListsEqual(List<bool> list1, List<bool> list2) {
+    if (list1.length != list2.length) return false;
+    for (int i = 0; i < list1.length; i++) {
+      if (list1[i] != list2[i]) return false;
+    }
+    return true;
+  }
 
   // Day names in Arabic - short form
   final List<String> _dayNames = const [
@@ -23,7 +90,7 @@ class ScheduleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isScheduleActive = device.isScheduleEnabled;
+    final isScheduleActive = widget.device.isScheduleEnabled;
 
     return Material(
       color: Colors.transparent,
@@ -34,7 +101,7 @@ class ScheduleCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => SchedulePage(device: device),
+              builder: (context) => SchedulePage(device: widget.device),
             ),
           );
         },
@@ -174,7 +241,7 @@ class ScheduleCard extends StatelessWidget {
                                 context,
                                 icon: Icons.power,
                                 title: 'وقت البدء',
-                                time: device.scheduleStartTime,
+                                time: widget.device.scheduleStartTime,
                                 isActiveSchedule: true,
                               ),
                             ),
@@ -188,7 +255,7 @@ class ScheduleCard extends StatelessWidget {
                                 context,
                                 icon: Icons.power_off,
                                 title: 'وقت الانتهاء',
-                                time: device.scheduleEndTime,
+                                time: widget.device.scheduleEndTime,
                                 isActiveSchedule: true,
                               ),
                             ),
@@ -219,13 +286,13 @@ class ScheduleCard extends StatelessWidget {
                                     height: 30,
                                     decoration: BoxDecoration(
                                       color:
-                                          device.scheduleDays[index]
+                                          widget.device.scheduleDays[index]
                                               ? colorScheme.onPrimary
                                               : colorScheme.onPrimary
                                                   .withOpacity(0.2),
                                       shape: BoxShape.circle,
                                       boxShadow:
-                                          device.scheduleDays[index]
+                                          widget.device.scheduleDays[index]
                                               ? [
                                                 BoxShadow(
                                                   color: Colors.black
@@ -243,7 +310,7 @@ class ScheduleCard extends StatelessWidget {
                                           fontSize: 12,
                                           fontWeight: FontWeight.bold,
                                           color:
-                                              device.scheduleDays[index]
+                                              widget.device.scheduleDays[index]
                                                   ? colorScheme.primary
                                                   : colorScheme.onPrimary
                                                       .withOpacity(0.5),

@@ -21,9 +21,6 @@
 
 
 
-
-
-
     <application
         android:label="agrosys"
         android:name="${applicationName}"

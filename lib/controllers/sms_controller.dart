@@ -245,9 +245,11 @@ class SMSController {
       _smsTracker.addSentSMS(sentSMS);
 
       if (onMessage != null) {
-        onMessage(success
-            ? "✅ SMS scheduled for ${scheduledTime.toString()}"
-            : "❌ Failed to schedule SMS");
+        onMessage(
+          success
+              ? "✅ SMS scheduled for ${scheduledTime.toString()}"
+              : "❌ Failed to schedule SMS",
+        );
       }
     } catch (e) {
       if (onMessage != null) onMessage("⚠️ Error scheduling SMS: $e");

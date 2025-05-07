@@ -53,16 +53,17 @@ class _PowerControlButtonState extends State<PowerControlButton>
         final currentDevice = devices[widget.appState.selectedDeviceIndex];
         final bool isOn = currentDevice.isPoweredOn;
 
+        // Generate command based on current state - send opposite command
         final String command =
-            "${currentDevice.passWord}#${!isOn ? "ON" : "OFF"}#";
+            "${currentDevice.passWord}#${isOn ? "OFF" : "ON"}#";
 
-        // Détermination de la couleur du bouton
+        // Determine button color based on device state
         final Color baseColor =
             widget.isWaiting
                 ? Colors.grey
                 : (isOn
-                    ? const Color(0xFFE70808) // rouge
-                    : const Color.fromARGB(255, 5, 138, 27)); // vert
+                    ? const Color(0xFFE70808) // red
+                    : const Color.fromARGB(255, 5, 138, 27)); // green
 
         final bool useGradient = !widget.isWaiting && !isOn;
 
@@ -116,9 +117,7 @@ class _PowerControlButtonState extends State<PowerControlButton>
             ),
             const SizedBox(height: 10),
             Text(
-              widget.isWaiting
-                  ? "جارٍ الإنتظار..."
-                  : (isOn ? "إيقاف التشغيل" : "تشغيل"),
+              widget.isWaiting ? "جارٍ الإنتظار..." : (isOn ? "مشغل" : "تشغيل"),
               style: const TextStyle(fontSize: 15),
               textDirection: TextDirection.rtl,
             ),

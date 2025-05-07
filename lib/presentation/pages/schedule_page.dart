@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:agrosys/domain/models/device.dart';
 import 'package:agrosys/presentation/widgets/header.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:agrosys/presentation/services/schedule_service.dart';
 
 class SchedulePage extends StatefulWidget {
   final Device device;
@@ -21,6 +22,7 @@ class _SchedulePageState extends State<SchedulePage>
   late List<bool> _scheduleDays;
   late AnimationController _animationController;
   late Animation<double> _animation;
+  final ScheduleService _scheduleService = ScheduleService();
 
   // Day names in Arabic
   final List<String> _dayNames = [
@@ -39,7 +41,11 @@ class _SchedulePageState extends State<SchedulePage>
     _startTime = widget.device.scheduleStartTime;
     _endTime = widget.device.scheduleEndTime;
     _isScheduleEnabled = widget.device.isScheduleEnabled;
-    _scheduleDays = List.from(widget.device.scheduleDays);
+    _scheduleDays = List.from(
+      widget.device.scheduleDays.isEmpty
+          ? List.filled(7, true)
+          : widget.device.scheduleDays,
+    );
 
     _animationController = AnimationController(
       vsync: this,
@@ -54,6 +60,19 @@ class _SchedulePageState extends State<SchedulePage>
     if (_isScheduleEnabled) {
       _animationController.value = 1.0;
     }
+
+    // Debug logs
+    debugPrint('SchedulePage: Initializing for device ${widget.device.name}');
+    debugPrint('SchedulePage: Schedule enabled: $_isScheduleEnabled');
+    debugPrint('SchedulePage: Start time: $_startTime');
+    debugPrint('SchedulePage: End time: $_endTime');
+    debugPrint('SchedulePage: Schedule days: $_scheduleDays');
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _scheduleService.setContext(context);
   }
 
   @override
@@ -69,9 +88,21 @@ class _SchedulePageState extends State<SchedulePage>
             ? _startTime ?? TimeOfDay.now()
             : _endTime ?? TimeOfDay.now();
 
+    // Convert to 24-hour format for display
+    final initialHour =
+        initialTime.hourOfPeriod == 12
+            ? (initialTime.period == DayPeriod.pm ? 12 : 0)
+            : (initialTime.period == DayPeriod.pm
+                ? initialTime.hourOfPeriod + 12
+                : initialTime.hourOfPeriod);
+    final initialTime24 = TimeOfDay(
+      hour: initialHour,
+      minute: initialTime.minute,
+    );
+
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: initialTime,
+      initialTime: initialTime24,
       builder: (context, child) {
         return Theme(
           data: theme.copyWith(
@@ -116,11 +147,57 @@ class _SchedulePageState extends State<SchedulePage>
       setState(() {
         if (isStartTime) {
           _startTime = picked;
+          debugPrint(
+            'SchedulePage: Start time set to ${picked.hour}:${picked.minute}',
+          );
         } else {
           _endTime = picked;
+          debugPrint(
+            'SchedulePage: End time set to ${picked.hour}:${picked.minute}',
+          );
         }
       });
+
+      // Update schedule immediately when time is changed
+      _updateSchedule();
     }
+  }
+
+  void _updateSchedule() {
+    debugPrint('SchedulePage: Updating schedule');
+    debugPrint('SchedulePage: Enabled: $_isScheduleEnabled');
+    debugPrint('SchedulePage: Start time: $_startTime');
+    debugPrint('SchedulePage: End time: $_endTime');
+    debugPrint('SchedulePage: Days: $_scheduleDays');
+
+    final deviceCubit = context.read<DeviceCubit>();
+    final updatedDevice = widget.device.copyWith(
+      isScheduleEnabled: _isScheduleEnabled,
+      scheduleStartTime: _startTime,
+      scheduleEndTime: _endTime,
+      scheduleDays: _scheduleDays,
+    );
+
+    // Update the device in the cubit
+    deviceCubit.updateDevice(widget.device, updatedDevice);
+
+    // Update the schedule service
+    _scheduleService.stopScheduleCheck(); // Stop existing schedule
+    if (_isScheduleEnabled) {
+      _scheduleService.startScheduleCheck(updatedDevice); // Start new schedule
+    }
+
+    // Show save confirmation
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _isScheduleEnabled ? 'تم حفظ الجدول' : 'تم إلغاء تفعيل الجدول',
+        ),
+        backgroundColor: _isScheduleEnabled ? Colors.green : Colors.orange,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      ),
+    );
   }
 
   Widget _buildTimeSelector({
@@ -131,6 +208,13 @@ class _SchedulePageState extends State<SchedulePage>
     final time = isStartTime ? _startTime : _endTime;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+
+    // Format time in 24-hour format
+    String formatTime(TimeOfDay time) {
+      final hour = time.hour.toString().padLeft(2, '0');
+      final minute = time.minute.toString().padLeft(2, '0');
+      return '$hour:$minute';
+    }
 
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -189,7 +273,7 @@ class _SchedulePageState extends State<SchedulePage>
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        time?.format(context) ?? 'اختر الوقت',
+                        time != null ? formatTime(time) : 'اختر الوقت',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -331,33 +415,10 @@ class _SchedulePageState extends State<SchedulePage>
                                     _animationController.forward();
                                   } else {
                                     _animationController.reverse();
-
-                                    // Save the disabled state immediately when toggled off
-                                    final deviceCubit =
-                                        context.read<DeviceCubit>();
-                                    final updatedDevice = widget.device
-                                        .copyWith(isScheduleEnabled: false);
-                                    deviceCubit.updateDevice(
-                                      widget.device,
-                                      updatedDevice,
-                                    );
-
-                                    // Show save confirmation
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: const Text(
-                                          'تم إلغاء تفعيل الجدول',
-                                        ),
-                                        backgroundColor: Colors.orange,
-                                        behavior: SnackBarBehavior.floating,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                            10,
-                                          ),
-                                        ),
-                                      ),
-                                    );
                                   }
+
+                                  // Update schedule immediately when toggle is changed
+                                  _updateSchedule();
                                 },
                               ),
                             ],
@@ -582,33 +643,7 @@ class _SchedulePageState extends State<SchedulePage>
                                     _startTime != null &&
                                     _endTime != null
                                 ? () {
-                                  final deviceCubit =
-                                      context.read<DeviceCubit>();
-                                  final updatedDevice = widget.device.copyWith(
-                                    isScheduleEnabled: _isScheduleEnabled,
-                                    scheduleStartTime: _startTime,
-                                    scheduleEndTime: _endTime,
-                                    scheduleDays: _scheduleDays,
-                                  );
-                                  deviceCubit.updateDevice(
-                                    widget.device,
-                                    updatedDevice,
-                                  );
-
-                                  // Show save confirmation
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: const Text(
-                                        'تم حفظ الجدول بنجاح',
-                                      ),
-                                      backgroundColor: Colors.green,
-                                      behavior: SnackBarBehavior.floating,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                    ),
-                                  );
-
+                                  _updateSchedule();
                                   Navigator.pop(context);
                                 }
                                 : null,

@@ -117,5 +117,4 @@ class DeviceCubit extends Cubit<List<Device>> {
       // Update schedule notifications
     }
   }
-
 }
