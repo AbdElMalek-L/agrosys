@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:agrosys/domain/models/device.dart';
-import 'package:agrosys/presentation/services/schedule_service.dart';
+import 'package:agrosys/controllers/schedule_service.dart';
 import 'package:agrosys/presentation/pages/schedule_page.dart';
 import 'package:intl/intl.dart';
 

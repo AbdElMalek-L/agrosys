@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:agrosys/domain/models/device.dart';
 import 'package:agrosys/presentation/widgets/header.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:agrosys/presentation/services/schedule_service.dart';
+import 'package:agrosys/controllers/schedule_service.dart';
 
 class SchedulePage extends StatefulWidget {
   final Device device;

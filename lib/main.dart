@@ -1,5 +1,6 @@
 import 'package:agrosys/domain/models/app_state.dart';
 import 'package:agrosys/presentation/cubits/device_cubit.dart';
+import 'package:agrosys/presentation/cubits/recent_activity_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -12,7 +13,6 @@ import 'package:agrosys/presentation/pages/intro_page.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
 import 'package:agrosys/presentation/themes/app_theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import 'package:agrosys/controllers/sms_controller.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 
 void main() async {
@@ -30,6 +30,7 @@ void main() async {
   // Create cubit instances
   final DeviceCubit deviceCubit = DeviceCubit(deviceRepo);
   final AppStateCubit appStateCubit = AppStateCubit(appStateRepo);
+  final RecentActivityCubit recentActivityCubit = RecentActivityCubit();
 
   // Run the app with providers
   runApp(
@@ -38,6 +39,7 @@ void main() async {
       appStateRepo: appStateRepo,
       deviceCubit: deviceCubit,
       appStateCubit: appStateCubit,
+      recentActivityCubit: recentActivityCubit,
     ),
   );
 }
@@ -47,6 +49,7 @@ class MyApp extends StatelessWidget {
   final AppStateRepo appStateRepo;
   final DeviceCubit deviceCubit;
   final AppStateCubit appStateCubit;
+  final RecentActivityCubit recentActivityCubit;
   final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
 
   MyApp({
@@ -55,6 +58,7 @@ class MyApp extends StatelessWidget {
     required this.appStateRepo,
     required this.deviceCubit,
     required this.appStateCubit,
+    required this.recentActivityCubit,
   });
 
   @override
@@ -64,11 +68,13 @@ class MyApp extends StatelessWidget {
         providers: [
           Provider<DeviceRepo>.value(value: deviceRepo),
           Provider<AppStateRepo>.value(value: appStateRepo),
+          BlocProvider<RecentActivityCubit>.value(value: recentActivityCubit),
         ],
         child: MultiBlocProvider(
           providers: [
             BlocProvider<AppStateCubit>.value(value: appStateCubit),
             BlocProvider<DeviceCubit>.value(value: deviceCubit),
+            BlocProvider<RecentActivityCubit>.value(value: recentActivityCubit),
           ],
           child: BlocBuilder<AppStateCubit, AppState>(
             builder: (context, appState) {
