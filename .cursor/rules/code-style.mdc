@@ -1,0 +1,37 @@
+# Code Style Guidelines
+
+## Naming Conventions
+- Use `UpperCamelCase` for classes, enums, typedefs, and extensions
+- Use `lowerCamelCase` for variables, functions, and parameters
+- Use descriptive names for boolean variables (e.g., isLoading, hasError)
+- Use `lowercase_with_underscores` for files and directories
+
+## File Organization
+- Keep each file focused on a single responsibility
+- Keep files under 300 lines, prefer splitting into multiple files
+- Follow the structure defined in AGROSYS_CODING_RULES.md
+- Order imports with dart: imports first, package: imports second, and relative imports last
+- Sort each import section alphabetically
+
+## UI Development
+- Create reusable widgets for common UI patterns
+- Use const constructors whenever possible
+- Avoid deeply nested widget trees
+- Break down large widgets into smaller, focused ones
+- Use named parameters for clarity
+- Follow the app's theme guidelines
+
+## State Management
+- Use BLoC/Cubit for complex state management
+- Use Provider for dependency injection
+- Prefer immutable state objects
+- Separate business logic from UI components
+- Avoid stateful widgets when state can be managed externally
+- Always dispose of controllers, timers, and streams appropriately
+
+## Documentation
+- Document public APIs with proper dartdoc comments
+- Include code examples for complex functionality
+- Use self-documenting code with clear, descriptive names
+- Document non-obvious code decisions or complex algorithms
+- Add TODOs for future improvements, but avoid leaving them indefinitely 

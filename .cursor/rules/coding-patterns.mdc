@@ -1,0 +1,22 @@
+# Coding Pattern Preferences
+- Always prefer simple solutions over complex ones
+- Avoid duplication of code whenever possible by checking for similar functionality elsewhere in the codebase
+- Write environment-aware code that handles different environments: dev, test, and prod
+- Only make requested changes or changes you're confident are well understood
+- Avoid introducing new patterns or technologies without first exhausting all options with existing implementations
+- Keep the codebase clean and organized
+- Avoid writing scripts in files, especially one-time scripts
+- Keep files under 200-300 lines; refactor longer files
+- Only use mock data for tests, never for dev or prod
+- Never add stubbing or fake data patterns that affect dev or prod environments
+- Never overwrite .env files without explicit confirmation
+
+# Clean Architecture Guidance
+- Follow the established project architecture:
+  - data/ layer: repositories, data sources, API models
+  - domain/ layer: entities, use cases, repository interfaces
+  - presentation/ layer: pages, widgets, cubits
+  - controllers/ layer: business logic and service management
+- Maintain clear separation of concerns between layers
+- Implement proper dependency injection using Provider
+- Keep UI logic separate from business logic 

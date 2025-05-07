@@ -1,0 +1,9 @@
+# Technical Stack
+- Flutter and Dart for cross-platform mobile development
+- Clean Architecture with separation of data, domain, and presentation layers
+- BLoC/Cubit for state management
+- Provider for dependency injection
+- SharedPreferences for local storage
+- Custom controllers for background services and notification management
+- Multi-platform support (Android, iOS, Web, macOS, Linux, Windows)
+- Material Design UI components 
