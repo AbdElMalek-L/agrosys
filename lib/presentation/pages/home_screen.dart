@@ -143,7 +143,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 'Updating power state to: ${isOn ? "ON" : "OFF"}',
               ); // Debug log
               context.read<DeviceCubit>().updatePowerState(selectedIndex, isOn);
-              _isWaitingForConfirmation = false;
+              
+              // Only update waiting state if we were waiting for confirmation
+              if (_isWaitingForConfirmation) {
+                setState(() {
+                  _isWaitingForConfirmation = false;
+                });
+              }
 
               // Add activity to recent activities
               final activity = Activity.fromSms(
@@ -157,15 +163,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // Only show notification if it's not a signal strength message or relay status
         if (_initialCheckDone && mounted) {
-          // Check if the message contains only a number between 0-31 or is a relay status
+          // Check if the message contains only a number between 0-31
           final isSignalMessage = RegExp(
             r'^\s*([0-9]|[12][0-9]|3[01])\s*$',
           ).hasMatch(newMessage ?? '');
-          final isRelayStatus =
-              newMessage?.startsWith("Relay ON!") == true ||
-              newMessage?.startsWith("Relay OFF!") == true;
 
-          if (!isSignalMessage && !isRelayStatus) {
+          if (!isSignalMessage) {
             showDialog(
               context: context,
               builder:
@@ -192,6 +195,21 @@ class _HomeScreenState extends State<HomeScreen> {
       _isWaitingForConfirmation = true;
     });
 
+    // Create a timer for 45 second timeout
+    Timer? timeoutTimer = Timer(const Duration(seconds: 45), () {
+      if (mounted) {
+        setState(() {
+          _isWaitingForConfirmation = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('انتهت مهلة انتظار التأكيد'),
+            backgroundColor: Colors.orange,
+          ),
+        );
+      }
+    });
+
     _smsController.sendCommandWithResponse(
       context: context,
       phoneNumber: phoneNumber,
@@ -205,17 +223,24 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
       onResult: (success, response) {
+        // Cancel the timeout timer since we got a response
+        timeoutTimer.cancel();
+
         if (!success) {
-          setState(() {
-            _isWaitingForConfirmation = false;
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: const Text('فشل إرسال الأمر'),
-              backgroundColor: Colors.red,
-            ),
-          );
+          if (mounted) {
+            setState(() {
+              _isWaitingForConfirmation = false;
+            });
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('فشل إرسال الأمر'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
         }
+        // Note: We don't set _isWaitingForConfirmation to false here
+        // as we want to wait for the confirmation SMS
       },
     );
   }

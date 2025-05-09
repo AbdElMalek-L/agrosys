@@ -18,6 +18,7 @@ import 'package:agrosys/controllers/schedule_service.dart';
 import 'package:agrosys/controllers/notification_service.dart';
 import 'package:agrosys/controllers/sms_controller.dart'; // Import SMSController
 import 'package:agrosys/main.dart';
+import 'package:agrosys/presentation/cubits/recent_activity_cubit.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
@@ -35,11 +36,11 @@ void main() {
 
     // Create service instances
     final SMSController smsController = SMSController();
-    final ScheduleService scheduleService = ScheduleService(
-      deviceCubit,
-      smsController,
-    );
+    final ScheduleService scheduleService = ScheduleService();
     final NotificationService notificationService = NotificationService();
+
+    // Create RecentActivityCubit
+    final RecentActivityCubit recentActivityCubit = RecentActivityCubit();
 
     // Build our app and trigger a frame.
     await tester.pumpWidget(
@@ -48,8 +49,7 @@ void main() {
         appStateRepo: appStateRepo,
         deviceCubit: deviceCubit,
         appStateCubit: appStateCubit,
-        scheduleService: scheduleService,
-        notificationService: notificationService,
+        recentActivityCubit: recentActivityCubit,
       ),
     );
 
