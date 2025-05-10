@@ -20,6 +20,7 @@ import 'device_sms_history_page.dart';
 
 import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'settings_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -143,7 +144,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 'Updating power state to: ${isOn ? "ON" : "OFF"}',
               ); // Debug log
               context.read<DeviceCubit>().updatePowerState(selectedIndex, isOn);
-              
+
               // Only update waiting state if we were waiting for confirmation
               if (_isWaitingForConfirmation) {
                 setState(() {
@@ -259,8 +260,31 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     const SizedBox(height: 20),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        IconButton(
+                          icon: const Icon(Icons.settings),
+                          onPressed: () {
+                            final devices = context.read<DeviceCubit>().state;
+                            final selectedIndex =
+                                context
+                                    .read<AppStateCubit>()
+                                    .state
+                                    .selectedDeviceIndex;
+                            if (devices.isNotEmpty &&
+                                selectedIndex < devices.length) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => SettingsPage(
+                                        device: devices[selectedIndex],
+                                      ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
                         GestureDetector(
                           onVerticalDragEnd: (details) {
                             if (details.primaryVelocity! > 0) {
@@ -274,6 +298,9 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(width: 8),
                         const Header(title: "لوحة التحكم"),
+                        const SizedBox(
+                          width: 48,
+                        ), // Add padding to balance the settings icon
                       ],
                     ),
                     const SizedBox(height: 20),

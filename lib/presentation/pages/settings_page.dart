@@ -4,6 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../cubits/device_cubit.dart';
 import '../../controllers/sms_controller.dart';
+import '../widgets/settings_page/setting_item_card.dart';
+import '../widgets/settings_page/password_setting_card.dart';
+import '../widgets/settings_page/authorized_numbers_card.dart';
+import '../widgets/settings_page/relay_control_card.dart';
+import '../widgets/settings_page/system_info_card.dart';
+import '../widgets/settings_page/access_control_card.dart';
+import '../widgets/settings_page/category_header.dart';
+import '../widgets/settings_page/digital_input_settings_card.dart'; // Added import
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key, required this.device});
@@ -231,6 +239,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     return Scaffold(
       appBar: AppBar(title: Header(title: _currentDevice.name)),
       body: SingleChildScrollView(
@@ -245,7 +255,12 @@ class _SettingsPageState extends State<SettingsPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildSettingCard(
+              // Device Info Category
+              const CategoryHeader(
+                title: 'معلومات الجهاز',
+                icon: Icons.devices_other,
+              ),
+              SettingItemCard(
                 title: 'اسم الجهاز',
                 controller: _nameController,
                 onPressed: _updateDeviceName,
@@ -256,12 +271,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   }
                   return null;
                 },
+                textAlign: TextAlign.right,
               ),
               const SizedBox(height: 16),
-              _buildSettingCard(
+              SettingItemCard(
                 title: 'رقم الهاتف',
                 controller: _phoneController,
-                keyboardType: TextInputType.phone,
                 onPressed: _updatePhoneNumber,
                 icon: Icons.phone,
                 validator: (value) {
@@ -270,208 +285,133 @@ class _SettingsPageState extends State<SettingsPage> {
                   }
                   return null;
                 },
+                keyboardType: TextInputType.phone,
+                textAlign: TextAlign.right,
               ),
-              const SizedBox(height: 16),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
+              const SizedBox(height: 28),
+              // Security Category
+              const CategoryHeader(title: 'الأمان', icon: Icons.lock),
+              PasswordSettingCard(
+                title: 'تغيير كلمة المرور',
+                oldPasswordController: _oldPasswordController,
+                newPasswordController: _newPasswordController,
+                onUpdatePassword: _updatePassword,
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'يرجى ملء حقلي كلمة المرور القديمة والجديدة';
+                  }
+                  if (value.length < 4) {
+                    return 'يجب أن تكون كلمة المرور 4 أرقام على الأقل';
+                  }
+                  return null;
+                },
+                textAlign: TextAlign.right,
+              ),
+              const SizedBox(height: 28),
+              // Notifications Category
+              const CategoryHeader(
+                title: 'الإشعارات',
+                icon: Icons.notifications_active,
+              ),
+              Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Theme.of(context).dividerColor.withOpacity(0.1),
+                child: SwitchListTile.adaptive(
+                  value: _isResponseEnabled,
+                  onChanged: _toggleResponseMessages,
+                  title: Text(
+                    'تفعيل الردود من الجهاز',
+                    style: theme.textTheme.bodyLarge,
+                    textAlign: TextAlign.right,
+                  ),
+                  secondary: Icon(Icons.sms, color: colorScheme.primary),
+                  activeColor: colorScheme.primary,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 4,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
                   ),
                 ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.notifications_active,
-                          size: 20,
-                          color:
-                              _isResponseEnabled
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(
-                                    context,
-                                  ).colorScheme.onSurface.withOpacity(0.5),
-                        ),
-                        const SizedBox(width: 12),
-                        Text(
-                          'تفعيل الردود',
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(fontWeight: FontWeight.w500),
-                        ),
-                      ],
-                    ),
-                    Switch(
-                      value: _isResponseEnabled,
-                      onChanged: _toggleResponseMessages,
-                      activeColor: Theme.of(context).colorScheme.primary,
-                      activeTrackColor: Theme.of(
-                        context,
-                      ).colorScheme.primary.withOpacity(0.3),
-                      inactiveThumbColor: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withOpacity(0.5),
-                      inactiveTrackColor: Theme.of(
-                        context,
-                      ).colorScheme.onSurface.withOpacity(0.1),
-                    ),
-                  ],
-                ),
               ),
-              const SizedBox(height: 24),
-              _buildPasswordCard(),
-              const SizedBox(height: 32),
+              const SizedBox(height: 28),
+              // Danger Zone Category
+              CategoryHeader(
+                title: 'المنطقة الخطرة',
+                icon: Icons.warning_amber_rounded,
+                iconColor: colorScheme.error,
+              ),
               FilledButton.icon(
                 icon: const Icon(Icons.delete_outline),
                 label: const Text('حذف الجهاز'),
                 onPressed: _confirmDelete,
                 style: FilledButton.styleFrom(
-                  backgroundColor: Theme.of(context).colorScheme.error,
-                  foregroundColor: Theme.of(context).colorScheme.onError,
-                  minimumSize: const Size(double.infinity, 50),
+                  backgroundColor: colorScheme.error,
+                  foregroundColor: colorScheme.onError,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  textStyle: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
-              Center(
-                child: TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('إغلاق'),
-                ),
+              const SizedBox(height: 28),
+              // Authorized Numbers Management
+              const CategoryHeader(
+                title: 'الأرقام المصرح بها',
+                icon: Icons.contacts,
+              ),
+              AuthorizedNumbersCard(
+                device: _currentDevice,
+                smsController: _smsController,
+              ),
+              const SizedBox(height: 28),
+              // Relay Control
+              const CategoryHeader(
+                title: 'التحكم في المرحلات',
+                icon: Icons.electrical_services,
+              ),
+              RelayControlCard(
+                device: _currentDevice,
+                smsController: _smsController,
+              ),
+              const SizedBox(height: 28),
+              // System Information
+              const CategoryHeader(
+                title: 'معلومات النظام',
+                icon: Icons.info_outline,
+              ),
+              SystemInfoCard(
+                device: _currentDevice,
+                smsController: _smsController,
+              ),
+              const SizedBox(height: 28),
+              // Access Control
+              const CategoryHeader(
+                title: 'التحكم في الوصول',
+                icon: Icons.security,
+              ),
+              AccessControlCard(
+                device: _currentDevice,
+                smsController: _smsController,
+              ),
+              const SizedBox(height: 28),
+              // Digital Input Settings
+              const CategoryHeader(
+                title: 'إعدادات المدخلات الرقمية',
+                icon: Icons.input,
+              ),
+              DigitalInputSettingsCard(
+                device: _currentDevice,
+                smsController: _smsController,
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildSettingCard({
-    required String title,
-    required TextEditingController controller,
-    TextInputType? keyboardType,
-    required VoidCallback onPressed,
-    IconData? icon,
-    String? Function(String?)? validator,
-  }) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-        child: Row(
-          children: [
-            if (icon != null) ...[
-              Icon(icon, color: Theme.of(context).colorScheme.primary),
-              const SizedBox(width: 16),
-            ],
-            Expanded(
-              child: TextFormField(
-                controller: controller,
-                keyboardType: keyboardType,
-                validator: validator,
-                decoration: InputDecoration(
-                  labelText: title,
-                  border: InputBorder.none,
-                  isDense: true,
-                ),
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-            ),
-            const SizedBox(width: 8),
-            FilledButton(onPressed: onPressed, child: const Text('تحديث')),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPasswordCard() {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'تغيير كلمة المرور',
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-              ),
-            ),
-            const SizedBox(height: 20),
-            TextFormField(
-              controller: _oldPasswordController,
-              obscureText: !_oldPasswordVisible,
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: 'كلمة المرور القديمة',
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _oldPasswordVisible
-                        ? Icons.visibility_off
-                        : Icons.visibility,
-                  ),
-                  onPressed:
-                      () => setState(
-                        () => _oldPasswordVisible = !_oldPasswordVisible,
-                      ),
-                ),
-                prefixIcon: const Icon(Icons.lock_outline),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'كلمة المرور القديمة مطلوبة';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _newPasswordController,
-              obscureText: !_newPasswordVisible,
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                labelText: 'كلمة المرور الجديدة',
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _newPasswordVisible
-                        ? Icons.visibility_off
-                        : Icons.visibility,
-                  ),
-                  onPressed:
-                      () => setState(
-                        () => _newPasswordVisible = !_newPasswordVisible,
-                      ),
-                ),
-                prefixIcon: const Icon(Icons.lock_outline),
-              ),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'كلمة المرور الجديدة مطلوبة';
-                }
-                if (value.length < 4) {
-                  return 'يجب أن تكون كلمة المرور 4 أرقام على الأقل';
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: 24),
-            FilledButton(
-              onPressed: _updatePassword,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size(double.infinity, 45),
-              ),
-              child: const Text('تحديث كلمة المرور'),
-            ),
-          ],
         ),
       ),
     );
