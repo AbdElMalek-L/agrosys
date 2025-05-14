@@ -10,6 +10,7 @@ import 'package:agrosys/data/repository/device_storage_repo.dart';
 import 'package:agrosys/domain/repository/app_state_repo.dart';
 import 'package:agrosys/domain/repository/device_repo.dart';
 import 'package:agrosys/presentation/pages/intro_page.dart';
+import 'package:agrosys/presentation/pages/home_screen.dart';
 import 'package:agrosys/presentation/cubits/app_state_cubit.dart';
 import 'package:agrosys/presentation/themes/app_theme.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -22,6 +23,7 @@ void main() async {
 
   // Initialize SharedPreferences
   final prefs = await SharedPreferences.getInstance();
+  final hasSeenIntro = prefs.getBool('hasSeenIntro') ?? false;
 
   // Create repository instances
   final DeviceRepo deviceRepo = DeviceStorageRepo(prefs);
@@ -35,6 +37,7 @@ void main() async {
   // Run the app with providers
   runApp(
     MyApp(
+      hasSeenIntro: hasSeenIntro, // 👈 ajouter ici
       deviceRepo: deviceRepo,
       appStateRepo: appStateRepo,
       deviceCubit: deviceCubit,
@@ -45,6 +48,7 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  final bool hasSeenIntro; // 👈 ajouter ici
   final DeviceRepo deviceRepo;
   final AppStateRepo appStateRepo;
   final DeviceCubit deviceCubit;
@@ -54,6 +58,7 @@ class MyApp extends StatelessWidget {
 
   MyApp({
     super.key,
+    required this.hasSeenIntro, // 👈 ajouter ici
     required this.deviceRepo,
     required this.appStateRepo,
     required this.deviceCubit,
@@ -87,7 +92,10 @@ class MyApp extends StatelessWidget {
                   themeMode:
                       appState.darkMode ? ThemeMode.dark : ThemeMode.light,
                   debugShowCheckedModeBanner: false,
-                  home: const IntroPage(),
+                  home:
+                      hasSeenIntro
+                          ? const HomeScreen()
+                          : const IntroPage(), // ✅ ici
                 ),
               );
             },
