@@ -21,6 +21,7 @@ import 'device_sms_history_page.dart';
 import 'package:flutter_sms_inbox/flutter_sms_inbox.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'settings_page.dart';
+import 'chatbot_page.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -283,6 +284,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                               );
                             }
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.chat_bubble_outline),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const ChatbotPage(),
+                              ),
+                            );
                           },
                         ),
                         GestureDetector(
